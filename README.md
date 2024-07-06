@@ -76,4 +76,4 @@ Contributions
 
 Contributions are welcome! If you find a bug or want to add a new feature, please open an issue or submit a pull request on the GitHub repository.
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/CatHood0/flutter_quill_delta_from_html/blob/Main/LICENSE) file for details.
