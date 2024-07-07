@@ -1,3 +1,8 @@
+## 1.1.8
+
+* Fix: README bad code ref, and better documentation
+* Chore: new custom block example and test for it
+
 ## 1.1.7
 
 * Fix: removed unused vars 

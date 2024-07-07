@@ -8,7 +8,7 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
 
 ```html
     Text Formatting
-        <b>, <strong>: Bold text
+        <b>, <strong>: Bold text 
         <i>, <em>: Italic text
         <u>, <ins>: Underlined text
         <s>, <del>: Strikethrough text
@@ -22,6 +22,7 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
         <ul>: Unordered lists
         <ol>: Ordered lists
         <li>: List items
+        <input type=checkbox>: Check lists
 
     Links
         <a>: Hyperlinks with support for the href attribute
@@ -43,8 +44,10 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
 
     Text attributes
         <p style="line-height: 1.0;font-size: 12;font-family: Times New Roman;color:#ffffff">: Inline attributes
+    
+    Custom Blocks  
+        <pullquote data-author="john">: Custom html
 
-    Custom Blocks (alternative to this package to create html to `CustomBlockEmbed` for Quill Js) 
 ```
 
 ## Not supported tags
@@ -54,13 +57,13 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
   <p style="padding: 10px">: indented paragraph
 ```
 
-Getting Started
+## Getting Started
 
-Add it to your pubspec.yaml:
+Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.1.7
+  flutter_quill_delta_from_html: ^1.1.8
 ```
 
 Then, import the package and use it in your Flutter application:
@@ -149,7 +152,7 @@ void main() {
   final delta = converter.convert(htmlText);
 /*
 This should be resulting delta
-  {"insert": "Regular paragraph before the custom block\n"},
+  {"insert": "Regular paragraph before the custom block"},
   {"insert": "Pullquote: \"This is a custom pullquote\" by John Doe", "attributes": {"italic": true}},
   {"insert": "\n"},
   {"insert": "Regular paragraph after the custom block\n"}
@@ -165,7 +168,10 @@ To utilize `HtmlOperations`, extend this class and implement the methods necessa
 
 ```dart
 abstract class HtmlOperations {
-  const HtmlOperations();
+  ///custom blocks are passed internally by HtmlToDelta
+  final List<CustomHtmlPart>? customBlocks;
+  const HtmlOperations({this.customBlocks});
+
   //You don't need to override this method 
   //as it simply calls the other methods 
   //to detect the type of HTML tag
@@ -181,14 +187,11 @@ abstract class HtmlOperations {
   List<Operation> videoToOp(dom.Element element);
   List<Operation> codeblockToOp(dom.Element element);
   List<Operation> blockquoteToOp(dom.Element element);
-  bool isInline(String tagName);
-  void processNode(dom.Node node, Map<String, dynamic> attributes, Delta delta);
-  List<Operation> inlineToOp(dom.Element element);
 }
 ```
 
 ## Contributions
 
-If you find a bug or want to add a new feature, please open an issue or submit a pull request on the GitHub repository.
+If you find a bug or want to add a new feature, please open an issue or submit a pull request on the [GitHub repository](https://github.com/CatHood0/flutter_quill_delta_from_html).
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/CatHood0/flutter_quill_delta_from_html/blob/Main/LICENSE) file for details.
