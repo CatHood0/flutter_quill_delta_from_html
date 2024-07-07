@@ -5,9 +5,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('HtmlToDelta tests', () {
     test('Header with styles', () {
-      const html = '<h3 style="text-align:right">Header example 3 <span><i>with</i> a spanned italic text</span></h3>';
+      const html =
+          '<h3 style="text-align:right">Header example 3 <span><i>with</i> a spanned italic text</span></h3>';
       final converter = HtmlToDelta();
-      final delta = converter.convert( html);
+      final delta = converter.convert(html);
 
       final expectedDelta = Delta()
         ..insert('Header example 3 ')
@@ -20,7 +21,8 @@ void main() {
     });
 
     test('Paragraph with link', () {
-      const html = '<p>This is a <a href="https://example.com">link</a> to example.com</p>';
+      const html =
+          '<p>This is a <a href="https://example.com">link</a> to example.com</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -28,6 +30,36 @@ void main() {
         ..insert('This is a ')
         ..insert('link', {'link': 'https://example.com'})
         ..insert(' to example.com')
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
+    test('Paragraph with spanned red text', () {
+      const html =
+          '<p>This is a <span style="background-color:rgb(255,255,255)">red text</span></p>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is a ')
+        ..insert('red text', {'background': '#ffffffff'})
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
+    test('Paragraph with subscript and superscript', () {
+      const html =
+          '<p>This is a paragraph that contains <sub>subscript</sub> and <sup>superscript</sup></p>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is a paragraph that contains ')
+        ..insert('subscript', {'script': 'sub'})
+        ..insert(' and ')
+        ..insert('superscript', {'script': 'super'})
         ..insert('\n');
 
       expect(delta, expectedDelta);
@@ -49,7 +81,8 @@ void main() {
     });
 
     test('Image', () {
-      const html = '<p>This is an image:</p><img src="https://example.com/image.png" />';
+      const html =
+          '<p>This is an image:</p><img src="https://example.com/image.png" />';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -86,7 +119,8 @@ void main() {
     });
 
     test('Text with different styles', () {
-      const html = '<p>This is <strong>bold</strong>, <em>italic</em>, and <u>underlined</u> text.</p>';
+      const html =
+          '<p>This is <strong>bold</strong>, <em>italic</em>, and <u>underlined</u> text.</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -104,7 +138,8 @@ void main() {
     });
 
     test('Combined styles and link', () {
-      const html = '<p>This is a <strong><a href="https://example.com">bold link</a></strong> with text.</p>';
+      const html =
+          '<p>This is a <strong><a href="https://example.com">bold link</a></strong> with text.</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 

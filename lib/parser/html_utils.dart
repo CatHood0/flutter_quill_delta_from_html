@@ -1,15 +1,16 @@
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
-import 'package:flutter_quill_delta_from_html/parser/html_to_operation.dart';
 import 'package:html/dom.dart' as dom;
+import 'colors.dart';
+import 'custom_html_part.dart';
 
 ///verify if the tag is from a inline html tag attribute
 bool isInline(String tag) {
-  return ["i", "em", "u", "ins", "s", "del", "b", "strong", "sub", "sup"].contains(tag);
+  return ["i", "em", "u", "ins", "s", "del", "b", "strong", "sub", "sup"]
+      .contains(tag);
 }
 
 ///get all attributes from a tag, and parse to Delta attributes
-///_By now just are supported font-size,font-family and line-height_
 Map<String, dynamic> parseStyleAttribute(String style) {
   Map<String, dynamic> attributes = {};
   if (style.isEmpty) return attributes;
@@ -24,6 +25,14 @@ Map<String, dynamic> parseStyleAttribute(String style) {
       switch (key) {
         case 'text-align':
           attributes['align'] = value;
+          break;
+        case 'color':
+          final color = validateAndGetColor(value);
+          attributes['color'] = color;
+          break;
+        case 'background-color':
+          final color = validateAndGetColor(value);
+          attributes['background'] = color;
           break;
         case 'font-size':
           attributes['size'] = value;
@@ -43,25 +52,14 @@ Map<String, dynamic> parseStyleAttribute(String style) {
   return attributes;
 }
 
-List<Operation> nodeToOperation(
-  dom.Node node,
-  HtmlOperations htmlToOp, [
-  List<Operation>? Function(dom.Element element)? customTagCallback,
-]) {
-  List<Operation> operations = [];
-  if (node is dom.Text) {
-    operations.add(Operation.insert(node.text.trim()));
-  }
-  if (node is dom.Element) {
-    List<Operation>? ops = htmlToOp.resolveCurrentElement(node) ?? customTagCallback?.call(node);
-    operations.addAll(ops ?? []);
-  }
-
-  return operations;
-}
-
 ///Store within the node getting text nodes, spans nodes, link nodes, and attributes to apply for the delta
-void processNode(dom.Node node, Map<String, dynamic> attributes, Delta delta, {bool insertOnSpan = false}) {
+void processNode(
+  dom.Node node,
+  Map<String, dynamic> attributes,
+  Delta delta, {
+  bool addSpanAttrs = false,
+  List<CustomHtmlPart>? customBlocks,
+}) {
   if (node is dom.Text) {
     delta.insert(node.text, attributes.isEmpty ? null : attributes);
   } else if (node is dom.Element) {
@@ -70,26 +68,42 @@ void processNode(dom.Node node, Map<String, dynamic> attributes, Delta delta, {b
     if (node.isItalic) newAttributes['italic'] = true;
     if (node.isUnderline) newAttributes['underline'] = true;
     if (node.isStrike) newAttributes['strike'] = true;
-
-    if (node.isSpan) {
-      final spanAttributes = parseStyleAttribute(node.attributes['style'] ?? '');
-      if (insertOnSpan) {
+    if (node.isSubscript) newAttributes['script'] = 'sub';
+    if (node.isSuperscript) newAttributes['script'] = 'super';
+    //use custom block since them can be into any html tag
+    if (customBlocks != null && customBlocks.isNotEmpty) {
+      for (var customBlock in customBlocks) {
+        if (customBlock.matches(node)) {
+          final operations =
+              customBlock.convert(node, currentAttributes: newAttributes);
+          operations.forEach((Operation op) {
+            delta.insert(op.data, op.attributes);
+          });
+          continue;
+        }
+      }
+    } else {
+      if (node.isSpan) {
+        final spanAttributes =
+            parseStyleAttribute(node.attributes['style'] ?? '');
+        if (addSpanAttrs) {
+          newAttributes.remove('align');
+          newAttributes.addAll({...spanAttributes});
+        }
+      }
+      if (node.isLink) {
+        final String? src = node.attributes['href'];
+        if (src != null) {
+          newAttributes['link'] = src;
+        }
+      }
+      if (node.isBreakLine) {
         newAttributes.remove('align');
-        delta.insert(node.text, {...newAttributes, ...spanAttributes});
+        delta.insert('\n', newAttributes);
       }
-    }
-    if (node.isLink) {
-      final String? src = node.attributes['href'];
-      if (src != null) {
-        newAttributes['link'] = src;
-      }
-    }
-    if (node.isBreakLine) {
-      newAttributes.remove('align');
-      delta.insert('\n', newAttributes);
     }
     for (final child in node.nodes) {
-      processNode(child, newAttributes, delta, insertOnSpan: insertOnSpan);
+      processNode(child, newAttributes, delta, addSpanAttrs: addSpanAttrs);
     }
   }
 }

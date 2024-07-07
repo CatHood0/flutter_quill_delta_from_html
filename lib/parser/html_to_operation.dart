@@ -2,14 +2,46 @@ import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
 import 'package:flutter_quill_delta_from_html/parser/html_utils.dart';
 import 'package:html/dom.dart' as dom;
+import 'custom_html_part.dart';
 
 ///HtmlOperations are a class that contains all necessary methods for
 ///Convert html (the supported ones) to valid operations for delta
 abstract class HtmlOperations {
-  const HtmlOperations();
+  final List<CustomHtmlPart>? customBlocks;
+  const HtmlOperations({this.customBlocks});
 
   ///Use this method to add full logic for comparate which type html tag is the current item on loop
-  List<Operation>? resolveCurrentElement(dom.Element element);
+  List<Operation> resolveCurrentElement(dom.Element element) {
+    List<Operation> ops = [];
+    if (element.localName == null) return ops;
+    //inlines
+    if (isInline(element.localName!)) {
+      final Delta delta = Delta();
+      final Map<String, dynamic> attributes = {};
+      if (element.isStrong) attributes['bold'] = true;
+      if (element.isItalic) attributes['italic'] = true;
+      if (element.isUnderline) attributes['underline'] = true;
+      if (element.isStrike) attributes['strike'] = true;
+      if (element.isSubscript) attributes['script'] = 'sub';
+      if (element.isSuperscript) attributes['script'] = 'super';
+      for (final node in element.nodes) {
+        processNode(node, attributes, delta, customBlocks: customBlocks);
+      }
+      ops.addAll(delta.toList());
+    }
+    //blocks
+    if (element.isBreakLine) ops.addAll(brToOp(element));
+    if (element.isParagraph) ops.addAll(paragraphToOp(element));
+    if (element.isHeader) ops.addAll(headerToOp(element));
+    if (element.isList) ops.addAll(listToOp(element));
+    if (element.isSpan) ops.addAll(spanToOp(element));
+    if (element.isLink) ops.addAll(linkToOp(element));
+    if (element.isImg) ops.addAll(imgToOp(element));
+    if (element.isVideo) ops.addAll(videoToOp(element));
+    if (element.isBlockquote) ops.addAll(blockquoteToOp(element));
+    if (element.isCodeBlock) ops.addAll(codeblockToOp(element));
+    return ops;
+  }
 
   ///Add a new line by default
   List<Operation> brToOp(dom.Element element);
@@ -44,38 +76,7 @@ abstract class HtmlOperations {
 
 ///Represents a default implementation of this package to parse html to operation
 class DefaultHtmlToOperations extends HtmlOperations {
-  const DefaultHtmlToOperations();
-
-  @override
-  List<Operation> resolveCurrentElement(dom.Element element) {
-    List<Operation> ops = [];
-    if (element.localName == null) return ops;
-    //inlines
-    if (isInline(element.localName!)) {
-      final Delta delta = Delta();
-      final Map<String, dynamic> attributes = {};
-      if (element.isStrong) attributes['bold'] = true;
-      if (element.isItalic) attributes['italic'] = true;
-      if (element.isUnderline) attributes['underline'] = true;
-      if (element.isStrike) attributes['strike'] = true;
-      for (final node in element.nodes) {
-        processNode(node, attributes, delta);
-      }
-      ops.addAll(delta.toList());
-    }
-    //blocks
-    if (element.isBreakLine) ops.addAll(brToOp(element));
-    if (element.isParagraph) ops.addAll(paragraphToOp(element));
-    if (element.isHeader) ops.addAll(headerToOp(element));
-    if (element.isList) ops.addAll(listToOp(element));
-    if (element.isSpan) ops.addAll(spanToOp(element));
-    if (element.isLink) ops.addAll(linkToOp(element));
-    if (element.isImg) ops.addAll(imgToOp(element));
-    if (element.isVideo) ops.addAll(videoToOp(element));
-    if (element.isBlockquote) ops.addAll(blockquoteToOp(element));
-    if (element.isCodeBlock) ops.addAll(codeblockToOp(element));
-    return ops;
-  }
+  const DefaultHtmlToOperations({super.customBlocks});
 
   @override
   List<Operation> paragraphToOp(dom.Element element) {
@@ -97,7 +98,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta, insertOnSpan: true);
+      processNode(node, inlineAttributes, delta,
+          addSpanAttrs: true, customBlocks: customBlocks);
     }
     if (blockAttributes.isNotEmpty) {
       delta.insert('\n', blockAttributes);
@@ -124,7 +126,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta, insertOnSpan: false);
+      processNode(node, inlineAttributes, delta,
+          addSpanAttrs: false, customBlocks: customBlocks);
     }
 
     return delta.toList();
@@ -180,7 +183,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
     final Delta delta = Delta();
     final tagName = element.localName ?? 'ul';
     final Map<String, dynamic> attributes = {};
-    final List<dom.Element> items = element.children.where((child) => child.localName == 'li').toList();
+    final List<dom.Element> items =
+        element.children.where((child) => child.localName == 'li').toList();
 
     if (tagName == 'ul') {
       attributes['list'] = 'bullet';
