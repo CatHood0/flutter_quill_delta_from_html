@@ -1,5 +1,3 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as dparser;
