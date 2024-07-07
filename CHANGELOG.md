@@ -1,3 +1,7 @@
+## 1.1.7
+
+* Fix: removed unused vars 
+
 ## 1.1.6
 
 * Fix: README bad code references

@@ -1,6 +1,6 @@
 name: flutter_quill_delta_from_html
 description: "Convert easily HTML inputs content to Quill Delta format"
-version: 1.1.6
+version: 1.1.7
 homepage:
 repository: https://github.com/CatHood0/flutter_quill_delta_from_html/
 issue_tracker: https://github.com/CatHood0/flutter_quill_delta_from_html/issues

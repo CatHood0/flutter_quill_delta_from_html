@@ -58,9 +58,6 @@ class HtmlToDelta {
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
     delta.insert('\n');
-    QuillController(
-        document: Document.fromDelta(delta),
-        selection: const TextSelection.collapsed(offset: 0));
     return delta;
   }
 
@@ -102,9 +99,6 @@ class HtmlToDelta {
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
     delta.insert('\n');
-    QuillController(
-        document: Document.fromDelta(delta),
-        selection: const TextSelection.collapsed(offset: 0));
     return delta;
   }
 
