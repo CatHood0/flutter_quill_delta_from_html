@@ -6,16 +6,14 @@ Features
 **This package** supports the conversion of a wide range of HTML tags and attributes into their corresponding Delta operations, ensuring that your HTML content is accurately represented in the Quill editor.
 Supported HTML Tags and Attributes
 
-The following HTML tags and their attributes will be supported:
 
+##  Supported tags
 ```html
     Text Formatting
         <b>, <strong>: Bold text
         <i>, <em>: Italic text
         <u>, <ins>: Underlined text
         <s>, <del>: Strikethrough text
-        <sup>: Superscript text
-        <sub>: Subscript text
 
     Headings
         <h1> to <h6>: Headings of various levels
@@ -41,19 +39,34 @@ The following HTML tags and their attributes will be supported:
         <code>: Code blocks
 
     Text Alignment
-        <p align="left|center|right|justify">: Paragraph alignment
+        <p style="text-align:left|center|right|justify">: Paragraph alignment
 
     Text attributes
         <span style="line-height: 1.0;font-size: 12;font-family: Times New Roman">: Span attributes
 ```
 
+## Not supported tags
+
+
+
+```html
+    Text Formatting
+        <sup>: Superscript text
+        <sub>: Subscript text
+    Text colors
+        <span style="background-color: rgb(255,255,255);color: rgb(255,255,255)">: colors 
+    Text indent
+        <p style="padding: 10px">: indented paragraph
+```
+
+
 Getting Started
 
-To start using flutter_quill_delta_from_html, add it to your pubspec.yaml:
+Add it to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.0.0
+  flutter_quill_delta_from_html: ^1.1.0
 ```
 
 Then, import the package and use it in your Flutter application:
@@ -63,7 +76,7 @@ import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart
 
 void main() {
   String htmlContent = "<p>Hello, <b>world</b>!</p>";
-  var delta = DeltaFromHTML().convert(htmlContent);
+  var delta = HtmlToDelta().convert(htmlContent);
   print(delta); // [ { "insert": "hello, " }, { "insert": "world", "attributes": {"bold": true} }, { "insert": "!" }, { "insert": "\n" } ]
 }
 ```
@@ -72,8 +85,8 @@ _For now the API is experimental and just to be sure, it's better use other alre
 tested alternatives, such as the original implementation of `flutter_quill`, where it also 
 allows obtaining `Delta` from a `HTML` input_
 
-Contributions
+## Contributions
 
-Contributions are welcome! If you find a bug or want to add a new feature, please open an issue or submit a pull request on the GitHub repository.
+If you find a bug or want to add a new feature, please open an issue or submit a pull request on the GitHub repository.
 
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/CatHood0/flutter_quill_delta_from_html/blob/Main/LICENSE) file for details.
