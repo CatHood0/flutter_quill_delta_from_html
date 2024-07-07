@@ -1,12 +1,12 @@
 import 'package:flutter_quill/quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/parser/html_to_delta.dart';
+import 'package:flutter_quill_delta_from_html/parser/pullquote_block_example.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('HtmlToDelta tests', () {
     test('Header with styles', () {
-      const html =
-          '<h3 style="text-align:right">Header example 3 <span><i>with</i> a spanned italic text</span></h3>';
+      const html = '<h3 style="text-align:right">Header example 3 <span><i>with</i> a spanned italic text</span></h3>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -21,8 +21,7 @@ void main() {
     });
 
     test('Paragraph with link', () {
-      const html =
-          '<p>This is a <a href="https://example.com">link</a> to example.com</p>';
+      const html = '<p>This is a <a href="https://example.com">link</a> to example.com</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -36,8 +35,7 @@ void main() {
     });
 
     test('Paragraph with spanned red text', () {
-      const html =
-          '<p>This is a <span style="background-color:rgb(255,255,255)">red text</span></p>';
+      const html = '<p>This is a <span style="background-color:rgb(255,255,255)">red text</span></p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -50,8 +48,7 @@ void main() {
     });
 
     test('Paragraph with subscript and superscript', () {
-      const html =
-          '<p>This is a paragraph that contains <sub>subscript</sub> and <sup>superscript</sup></p>';
+      const html = '<p>This is a paragraph that contains <sub>subscript</sub> and <sup>superscript</sup></p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -81,8 +78,7 @@ void main() {
     });
 
     test('Image', () {
-      const html =
-          '<p>This is an image:</p><img src="https://example.com/image.png" />';
+      const html = '<p>This is an image:</p><img src="https://example.com/image.png" />';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -119,8 +115,7 @@ void main() {
     });
 
     test('Text with different styles', () {
-      const html =
-          '<p>This is <strong>bold</strong>, <em>italic</em>, and <u>underlined</u> text.</p>';
+      const html = '<p>This is <strong>bold</strong>, <em>italic</em>, and <u>underlined</u> text.</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -138,8 +133,7 @@ void main() {
     });
 
     test('Combined styles and link', () {
-      const html =
-          '<p>This is a <strong><a href="https://example.com">bold link</a></strong> with text.</p>';
+      const html = '<p>This is a <strong><a href="https://example.com">bold link</a></strong> with text.</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -151,5 +145,30 @@ void main() {
 
       expect(delta, expectedDelta);
     });
+  });
+
+  test('should convert custom <pullquote> block to Delta with custom attributes', () {
+    const htmlText = '''
+        <html>
+          <body>
+            <p>Regular paragraph before the custom block</p>
+            <pullquote data-author="John Doe" data-style="italic">This is a custom pullquote</pullquote>
+            <p>Regular paragraph after the custom block</p>
+          </body>
+        </html>
+      ''';
+
+    final customBlocks = [PullquoteBlock()];
+
+    final converter = HtmlToDelta(customBlocks: customBlocks);
+    final delta = converter.convert(htmlText);
+
+    final expectedDelta = Delta()
+      ..insert('Regular paragraph before the custom block')
+      ..insert('Pullquote: "This is a custom pullquote" by John Doe', {'italic': true})
+      ..insert('\n')
+      ..insert('Regular paragraph after the custom block\n');
+
+    expect(delta, equals(expectedDelta));
   });
 }
