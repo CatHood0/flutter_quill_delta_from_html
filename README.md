@@ -1,10 +1,8 @@
 # Flutter Quill Delta from HTML
 
 This is a Dart package that converts HTML input into Quill Delta format, which is used in the flutter_quill package. This allows developers to easily convert HTML content to a format that can be displayed and edited using the Quill rich text editor in Flutter applications.
-Features
 
 **This package** supports the conversion of a wide range of HTML tags and attributes into their corresponding Delta operations, ensuring that your HTML content is accurately represented in the Quill editor.
-Supported HTML Tags and Attributes
 
 ##  Supported tags
 ```html
