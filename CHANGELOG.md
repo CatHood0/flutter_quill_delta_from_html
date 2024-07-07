@@ -1,3 +1,7 @@
+## 1.1.6
+
+* Fix: README bad code references
+
 ## 1.1.5
 
 * Feat: added support for subscript and superscript

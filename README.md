@@ -36,7 +36,7 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
         <blockquote>: Block quotations
 
     Code Blocks
-        <code>: Code blocks
+        <pre>, <code>: Code blocks
 
     Text Alignment
         <p style="text-align:left|center|right|justify">: Paragraph alignment
@@ -80,7 +80,7 @@ void main() {
 }
 ```
 
-## Creating your own CustomHtmlPart (alternative to create `CustomBlockEmbeds` from custom html)
+## Creating your own `CustomHtmlPart` (alternative to create `CustomBlockEmbeds` from custom html)
 
 First you need to define your own `CustomHtmlPart`
 
@@ -89,7 +89,7 @@ import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart
 import 'package:html/dom.dart' as dom;
 
 /// Custom block handler for <pullquote> elements.
-class PullquoteBlock extends CustomBlock {
+class PullquoteBlock extends CustomHtmlPart {
   @override
   bool matches(dom.Element element) {
     return element.localName == 'pullquote';
