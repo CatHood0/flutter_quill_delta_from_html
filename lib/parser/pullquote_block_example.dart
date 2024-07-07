@@ -1,4 +1,4 @@
-import 'package:flutter_quill/quill_delta.dart';
+import 'package:dart_quill_delta/dart_quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 import 'package:html/dom.dart' as dom;
 

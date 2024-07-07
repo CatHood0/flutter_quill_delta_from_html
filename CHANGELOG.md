@@ -1,3 +1,8 @@
+## 1.2.0
+
+* Chore: removed flutter_quill dependency to use only required parts of it
+* Fix: HtmlOperations doesn't pass the customBlocks from HtmlToDelta
+
 ## 1.1.8
 
 * Fix: README bad code ref, and better documentation

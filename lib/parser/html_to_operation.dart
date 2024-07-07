@@ -1,4 +1,4 @@
-import 'package:flutter_quill/quill_delta.dart';
+import 'package:dart_quill_delta/dart_quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
 import 'package:flutter_quill_delta_from_html/parser/html_utils.dart';
 import 'package:html/dom.dart' as dom;
@@ -7,8 +7,7 @@ import 'custom_html_part.dart';
 ///HtmlOperations are a class that contains all necessary methods for
 ///Convert html (the supported ones) to valid operations for delta
 abstract class HtmlOperations {
-  final List<CustomHtmlPart>? customBlocks;
-  const HtmlOperations({this.customBlocks});
+  List<CustomHtmlPart>? customBlocks;
 
   ///Use this method to add full logic for comparate which type html tag is the current item on loop
   List<Operation> resolveCurrentElement(dom.Element element) {
@@ -72,11 +71,15 @@ abstract class HtmlOperations {
 
   ///Used when detect a link html tag <blockquote>
   List<Operation> blockquoteToOp(dom.Element element);
+
+  void setCustomBlocks(List<CustomHtmlPart> customBlocks) {
+    this.customBlocks = [...customBlocks];
+  }
 }
 
-///Represents a default implementation of this package to parse html to operation
+///Default implementation of this package to parse common html to operation
 class DefaultHtmlToOperations extends HtmlOperations {
-  const DefaultHtmlToOperations({super.customBlocks});
+  DefaultHtmlToOperations();
 
   @override
   List<Operation> paragraphToOp(dom.Element element) {
@@ -98,8 +101,7 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta,
-          addSpanAttrs: true, customBlocks: customBlocks);
+      processNode(node, inlineAttributes, delta, addSpanAttrs: true, customBlocks: customBlocks);
     }
     if (blockAttributes.isNotEmpty) {
       delta.insert('\n', blockAttributes);
@@ -126,8 +128,7 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta,
-          addSpanAttrs: false, customBlocks: customBlocks);
+      processNode(node, inlineAttributes, delta, addSpanAttrs: false, customBlocks: customBlocks);
     }
 
     return delta.toList();
@@ -183,8 +184,7 @@ class DefaultHtmlToOperations extends HtmlOperations {
     final Delta delta = Delta();
     final tagName = element.localName ?? 'ul';
     final Map<String, dynamic> attributes = {};
-    final List<dom.Element> items =
-        element.children.where((child) => child.localName == 'li').toList();
+    final List<dom.Element> items = element.children.where((child) => child.localName == 'li').toList();
 
     if (tagName == 'ul') {
       attributes['list'] = 'bullet';

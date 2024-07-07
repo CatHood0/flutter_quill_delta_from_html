@@ -22,7 +22,7 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
         <ul>: Unordered lists
         <ol>: Ordered lists
         <li>: List items
-        <input type=checkbox>: Check lists
+        <input type="checkbox">: Check lists
 
     Links
         <a>: Hyperlinks with support for the href attribute
@@ -63,7 +63,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.1.8
+  flutter_quill_delta_from_html: ^1.2.0
 ```
 
 Then, import the package and use it in your Flutter application:
@@ -169,8 +169,7 @@ To utilize `HtmlOperations`, extend this class and implement the methods necessa
 ```dart
 abstract class HtmlOperations {
   ///custom blocks are passed internally by HtmlToDelta
-  final List<CustomHtmlPart>? customBlocks;
-  const HtmlOperations({this.customBlocks});
+  List<CustomHtmlPart>? customBlocks;
 
   //You don't need to override this method 
   //as it simply calls the other methods 

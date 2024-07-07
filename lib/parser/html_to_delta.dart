@@ -1,9 +1,7 @@
-import 'package:flutter_quill/quill_delta.dart';
+import 'package:dart_quill_delta/dart_quill_delta.dart';
+import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as dparser;
-
-import 'custom_html_part.dart';
-import 'html_to_operation.dart';
 
 /// Default converter for html to Delta
 class HtmlToDelta {
@@ -11,12 +9,15 @@ class HtmlToDelta {
   final List<CustomHtmlPart>? customBlocks;
 
   ///Defines how will be builded the common tags to Delta Operations
-  final HtmlOperations htmlToOp;
+  late HtmlOperations htmlToOp;
 
   HtmlToDelta({
-    this.htmlToOp = const DefaultHtmlToOperations(),
+    HtmlOperations? htmlToOperations,
     this.customBlocks,
-  });
+  }) {
+    htmlToOp = htmlToOperations ?? DefaultHtmlToOperations();
+    htmlToOp.setCustomBlocks(customBlocks ?? []);
+  }
 
   /// Converts HTML text into Delta operations.
   ///
@@ -30,13 +31,10 @@ class HtmlToDelta {
     final dom.Element? $html = $document.documentElement;
 
     // Determine nodes to process: <body>, <html>, or document nodes if neither is present
-    final List<dom.Node> nodesToProcess =
-        $body?.nodes ?? $html?.nodes ?? $document.nodes;
+    final List<dom.Node> nodesToProcess = $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (var node in nodesToProcess) {
-      if (customBlocks != null &&
-          customBlocks!.isNotEmpty &&
-          node is dom.Element) {
+      if (customBlocks != null && customBlocks!.isNotEmpty && node is dom.Element) {
         for (var customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
             final operations = customBlock.convert(node);
@@ -71,13 +69,10 @@ class HtmlToDelta {
     final dom.Element? $html = $document.documentElement;
 
     // Determine nodes to process: <body>, <html>, or document nodes if neither is present
-    final List<dom.Node> nodesToProcess =
-        $body?.nodes ?? $html?.nodes ?? $document.nodes;
+    final List<dom.Node> nodesToProcess = $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (var node in nodesToProcess) {
-      if (customBlocks != null &&
-          customBlocks!.isNotEmpty &&
-          node is dom.Element) {
+      if (customBlocks != null && customBlocks!.isNotEmpty && node is dom.Element) {
         for (var customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
             final operations = customBlock.convert(node);
