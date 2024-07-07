@@ -6,7 +6,6 @@ Features
 **This package** supports the conversion of a wide range of HTML tags and attributes into their corresponding Delta operations, ensuring that your HTML content is accurately represented in the Quill editor.
 Supported HTML Tags and Attributes
 
-
 ##  Supported tags
 ```html
     Text Formatting
@@ -57,6 +56,7 @@ Supported HTML Tags and Attributes
         <span style="background-color: rgb(255,255,255);color: rgb(255,255,255)">: colors 
     Text indent
         <p style="padding: 10px">: indented paragraph
+    Custom Blocks
 ```
 
 
