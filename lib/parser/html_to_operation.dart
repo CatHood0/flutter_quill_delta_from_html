@@ -17,12 +17,6 @@ abstract class HtmlOperations {
     if (isInline(element.localName!)) {
       final Delta delta = Delta();
       final Map<String, dynamic> attributes = {};
-      if (element.isStrong) attributes['bold'] = true;
-      if (element.isItalic) attributes['italic'] = true;
-      if (element.isUnderline) attributes['underline'] = true;
-      if (element.isStrike) attributes['strike'] = true;
-      if (element.isSubscript) attributes['script'] = 'sub';
-      if (element.isSuperscript) attributes['script'] = 'super';
       for (final node in element.nodes) {
         processNode(node, attributes, delta, customBlocks: customBlocks);
       }
