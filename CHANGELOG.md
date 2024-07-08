@@ -1,3 +1,8 @@
+## 1.2.2
+
+* Feat: added support for data-checked attribute for <li> tags
+* Fix: removed duplicated getting inline attributes at resolveCurrentElement
+
 ## 1.2.1
 
 * Feat: added support for align attribute (a different way of align the text, like: text-align)

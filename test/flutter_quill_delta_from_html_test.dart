@@ -117,6 +117,22 @@ void main() {
       expect(delta, expectedDelta);
     });
 
+    test('Checklist', () {
+      const html =
+          '<ul><li data-checked="true">First item</li><li data-checked="false">Second item</li></ul>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('First item')
+        ..insert('\n', {'list': 'checked'})
+        ..insert('Second item')
+        ..insert('\n', {'list': 'unchecked'})
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
     test('Image', () {
       const html = '<p>This is an image:</p><img src="https://example.com/image.png" />';
       final converter = HtmlToDelta();

@@ -52,6 +52,14 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           attributes['align'] = style;
         case 'rtl':
           attributes['direction'] = 'rtl';
+        case 'true' || 'false':
+          //then is check list
+          if (style == 'true') {
+            attributes['list'] = 'checked';
+          } else {
+            attributes['list'] = 'unchecked';
+          }
+          break;
         default:
           break;
       }

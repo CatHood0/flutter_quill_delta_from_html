@@ -216,6 +216,14 @@ class DefaultHtmlToOperations extends HtmlOperations {
       }
     }
     for (final item in items) {
+      if (checkbox == null) {
+        final dataChecked = item.attributes['data-checked'] ?? '';
+        final blockAttrs = parseStyleAttribute(dataChecked);
+        var isCheckList = item.localName == 'li' && blockAttrs.isNotEmpty && blockAttrs.containsKey('list');
+        if (isCheckList) {
+          attributes['list'] = blockAttrs['list'];
+        }
+      }
       for (final node in item.nodes) {
         if (node.nodeType == dom.Node.TEXT_NODE) {
           delta.insert(node.text);

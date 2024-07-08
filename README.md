@@ -1,6 +1,6 @@
 # Flutter Quill Delta from HTML
 
-This is a Dart package that converts HTML input into Quill Delta format, which is used in the flutter_quill package. This allows developers to easily convert HTML content to a format that can be displayed and edited using the Quill rich text editor in Flutter applications.
+This is a Dart package that converts HTML input into Quill Delta format, which is used in the `flutter_quill` package. This allows developers to easily convert `HTML` content to a format that can be displayed and edited using the Quill rich text editor in Flutter applications.
 
 **This package** supports the conversion of a wide range of HTML tags and attributes into their corresponding Delta operations, ensuring that your HTML content is accurately represented in the Quill editor.
 
@@ -22,7 +22,8 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
         <ul>: Unordered lists
         <ol>: Ordered lists
         <li>: List items
-        <input type="checkbox">: Check lists
+        <li data-checked="true">: Check lists 
+        <input type="checkbox">: Another alternative to make a check lists
 
     Links
         <a>: Hyperlinks with support for the href attribute
@@ -65,7 +66,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.2.1
+  flutter_quill_delta_from_html: ^1.2.2
 ```
 
 Then, import the package and use it in your Flutter application:
