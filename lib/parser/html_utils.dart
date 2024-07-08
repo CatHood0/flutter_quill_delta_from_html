@@ -6,8 +6,7 @@ import 'custom_html_part.dart';
 
 ///verify if the tag is from a inline html tag attribute
 bool isInline(String tag) {
-  return ["i", "em", "u", "ins", "s", "del", "b", "strong", "sub", "sup"]
-      .contains(tag);
+  return ["i", "em", "u", "ins", "s", "del", "b", "strong", "sub", "sup"].contains(tag);
 }
 
 ///get all attributes from a tag, and parse to Delta attributes
@@ -35,14 +34,24 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           attributes['background'] = color;
           break;
         case 'font-size':
-          attributes['size'] = value;
+          attributes['size'] = value.replaceAll('px', '').replaceAll('em', '').replaceAll('vm', '');
           break;
         case 'font-family':
           attributes['font'] = value;
           break;
         case 'line-height':
-          attributes['line-height'] = value;
+          attributes['line-height'] =
+              double.parse(value.replaceAll('px', '').replaceAll('em', '').replaceAll('vm', ''));
           break;
+        default:
+          break;
+      }
+    } else {
+      switch (style) {
+        case 'justify' || 'center' || 'left' || 'right':
+          attributes['align'] = style;
+        case 'rtl':
+          attributes['direction'] = 'rtl';
         default:
           break;
       }
@@ -74,8 +83,7 @@ void processNode(
     if (customBlocks != null && customBlocks.isNotEmpty) {
       for (var customBlock in customBlocks) {
         if (customBlock.matches(node)) {
-          final operations =
-              customBlock.convert(node, currentAttributes: newAttributes);
+          final operations = customBlock.convert(node, currentAttributes: newAttributes);
           operations.forEach((Operation op) {
             delta.insert(op.data, op.attributes);
           });
@@ -84,10 +92,10 @@ void processNode(
       }
     } else {
       if (node.isSpan) {
-        final spanAttributes =
-            parseStyleAttribute(node.attributes['style'] ?? '');
+        final spanAttributes = parseStyleAttribute(node.attributes['style'] ?? '');
         if (addSpanAttrs) {
           newAttributes.remove('align');
+          newAttributes.remove('direction');
           newAttributes.addAll({...spanAttributes});
         }
       }
@@ -99,6 +107,7 @@ void processNode(
       }
       if (node.isBreakLine) {
         newAttributes.remove('align');
+        newAttributes.remove('direction');
         delta.insert('\n', newAttributes);
       }
     }

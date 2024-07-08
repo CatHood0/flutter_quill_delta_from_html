@@ -1,3 +1,8 @@
+## 1.2.1
+
+* Feat: added support for align attribute (a different way of align the text, like: text-align)
+* Fix: Line-height is not pasted as double
+
 ## 1.2.0
 
 * Chore: removed flutter_quill dependency to use only required parts of it

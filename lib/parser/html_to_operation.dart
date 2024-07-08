@@ -88,12 +88,19 @@ class DefaultHtmlToOperations extends HtmlOperations {
     Map<String, dynamic> inlineAttributes = {};
     Map<String, dynamic> blockAttributes = {};
     // Process the style attribute
-    if (attributes.containsKey('style')) {
-      final String style = element.attributes['style']!;
+    if (attributes.containsKey('style') || attributes.containsKey('align') || attributes.containsKey('dir')) {
+      final String style = attributes['style'] ?? '';
+      final String? styles2 = attributes['align'];
+      final String? styles3 = attributes['dir'];
       final styleAttributes = parseStyleAttribute(style);
-      if (styleAttributes.containsKey('align')) {
+      final alignAttribute = parseStyleAttribute(styles2 ?? '');
+      final dirAttribute = parseStyleAttribute(styles3 ?? '');
+      styleAttributes.addAll({...alignAttribute, ...dirAttribute});
+      if (styleAttributes.containsKey('align') || styleAttributes.containsKey('direction')) {
         blockAttributes['align'] = styleAttributes['align'];
+        blockAttributes['direction'] = styleAttributes['direction'];
         styleAttributes.remove('align');
+        styleAttributes.remove('direction');
       }
       inlineAttributes.addAll(styleAttributes);
     }
@@ -104,6 +111,7 @@ class DefaultHtmlToOperations extends HtmlOperations {
       processNode(node, inlineAttributes, delta, addSpanAttrs: true, customBlocks: customBlocks);
     }
     if (blockAttributes.isNotEmpty) {
+      blockAttributes.removeWhere((key, value) => value == null);
       delta.insert('\n', blockAttributes);
     }
 
@@ -117,8 +125,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
     Map<String, dynamic> inlineAttributes = {};
     // Process the style attribute
     if (attributes.containsKey('style')) {
-      final String style = element.attributes['style'] ?? '';
-      final styleAttributes = parseStyleAttribute(style);
+      final String? style = attributes['style'];
+      final styleAttributes = parseStyleAttribute(style ?? '');
       if (styleAttributes.containsKey('align')) {
         styleAttributes.remove('align');
       }
@@ -157,12 +165,21 @@ class DefaultHtmlToOperations extends HtmlOperations {
     Map<String, dynamic> attributes = {};
     Map<String, dynamic> blockAttributes = {};
 
-    if (element.attributes.containsKey('style')) {
-      final String style = element.attributes['style']!;
+    if (element.attributes.containsKey('style') ||
+        element.attributes.containsKey('align') ||
+        element.attributes.containsKey('dir')) {
+      final String style = element.attributes['style'] ?? '';
+      final String? styles2 = element.attributes['align'];
+      final String? styles3 = element.attributes['dir'];
       final styleAttributes = parseStyleAttribute(style);
-      if (styleAttributes.containsKey('align')) {
+      final alignAttribute = parseStyleAttribute(styles2 ?? '');
+      final dirAttribute = parseStyleAttribute(styles3 ?? '');
+      styleAttributes.addAll({...alignAttribute, ...dirAttribute});
+      if (styleAttributes.containsKey('align') || styleAttributes.containsKey('direction')) {
         blockAttributes['align'] = styleAttributes['align'];
+        blockAttributes['direction'] = styleAttributes['direction'];
         styleAttributes.remove('align');
+        styleAttributes.remove('direction');
       }
       attributes.addAll(styleAttributes);
     }
@@ -175,7 +192,10 @@ class DefaultHtmlToOperations extends HtmlOperations {
       processNode(node, attributes, delta);
     }
     // Ensure a newline is added at the end of the header with the correct attributes
-    delta.insert('\n', blockAttributes);
+    if (blockAttributes.isNotEmpty) {
+      blockAttributes.removeWhere((key, value) => value == null);
+      delta.insert('\n', blockAttributes);
+    }
     return delta.toList();
   }
 

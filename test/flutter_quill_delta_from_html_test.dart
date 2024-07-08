@@ -34,6 +34,46 @@ void main() {
       expect(delta, expectedDelta);
     });
 
+    test('Paragraph alignment', () {
+      const html = '<p align="center">This is a paragraph example</p>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is a paragraph example')
+        ..insert('\n', {"align": "center"})
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
+    test('Paragraph to RTL', () {
+      const html = '<p dir="rtl">This is a RTL paragraph example</p>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is a RTL paragraph example')
+        ..insert('\n', {"direction": "rtl"})
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
+    test('Paragraph alignment RTL with inline styles', () {
+      const html =
+          '<p align="center" dir="rtl" style="line-height: 1.5px;font-size: 15px;font-family: Tinos">This is a paragraph example</p>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is a paragraph example', {"line-height": 1.5, "size": "15", "font": "Tinos"})
+        ..insert('\n', {"align": "center", "direction": "rtl"})
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
     test('Paragraph with spanned red text', () {
       const html = '<p>This is a <span style="background-color:rgb(255,255,255)">red text</span></p>';
       final converter = HtmlToDelta();

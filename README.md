@@ -39,8 +39,10 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
     Code Blocks
         <pre>, <code>: Code blocks
 
-    Text Alignment
-        <p style="text-align:left|center|right|justify">: Paragraph alignment
+    Text Alignment, inline text align and direction
+        <p style="text-align:left|center|right|justify">: Paragraph style alignment
+        <p align="left|center|right|justify">: Paragraph alignment
+        <p dir="rtl">: Paragraph direction 
 
     Text attributes
         <p style="line-height: 1.0;font-size: 12;font-family: Times New Roman;color:#ffffff">: Inline attributes
@@ -63,7 +65,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.2.0
+  flutter_quill_delta_from_html: ^1.2.1
 ```
 
 Then, import the package and use it in your Flutter application:
