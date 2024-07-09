@@ -7,7 +7,7 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
 ## Supported tags
 
 ```html
-    Text Formatting
+    <!--Text Formatting-->
         <b>, <strong>: Bold text 
         <i>, <em>: Italic text
         <u>, <ins>: Underlined text
@@ -15,40 +15,40 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
         <sup>: Superscript text
         <sub>: Subscript text
 
-    Headings
+    <!--Headings-->
         <h1> to <h6>: Headings of various levels
 
-    Lists
+    <!--Lists-->
         <ul>: Unordered lists
         <ol>: Ordered lists
         <li>: List items
         <li data-checked="true">: Check lists 
         <input type="checkbox">: Another alternative to make a check lists
 
-    Links
+    <!--Links-->
         <a>: Hyperlinks with support for the href attribute
 
-    Images
-        <img>: Images with support for the src, alt, and width attributes
+    <!--Images-->
+        <img>: Images with support for the src
 
-    Videos 
+    <!--Videos -->
         <iframe>, <video>: Videos with support for the src
 
-    Blockquotes
+    <!--Blockquotes-->
         <blockquote>: Block quotations
 
-    Code Blocks
+    <!--Code Blocks-->
         <pre>, <code>: Code blocks
 
-    Text Alignment, inline text align and direction
+    <!--Text Alignment, inline text align and direction-->
         <p style="text-align:left|center|right|justify">: Paragraph style alignment
         <p align="left|center|right|justify">: Paragraph alignment
         <p dir="rtl">: Paragraph direction 
 
-    Text attributes
-        <p style="line-height: 1.0;font-size: 12;font-family: Times New Roman;color:#ffffff">: Inline attributes
+    <!--Text attributes-->
+        <p style="line-height: 1.0px;font-size: 12px;font-family: Times New Roman;color:#ffffff">: Inline attributes
     
-    Custom Blocks  
+    <!--Custom Blocks-->
         <pullquote data-author="john">: Custom html
 
 ```
@@ -56,8 +56,8 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
 ## Not supported tags
 
 ```html
-  Text indent
-  <p style="padding: 10px">: indented paragraph
+  <!--Text indent-->
+  <p style="padding: 10px"> 
 ```
 
 ## Getting Started
@@ -66,7 +66,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.2.2
+  flutter_quill_delta_from_html: ^1.2.3
 ```
 
 Then, import the package and use it in your Flutter application:
@@ -98,6 +98,10 @@ import 'package:html/dom.dart' as dom;
 class PullquoteBlock extends CustomHtmlPart {
   @override
   bool matches(dom.Element element) {
+    //you can put here the validation that you want
+    //
+    // To detect a <p>, you just need to do something like: 
+    // element.localName == 'p'
     return element.localName == 'pullquote';
   }
 
@@ -107,6 +111,12 @@ class PullquoteBlock extends CustomHtmlPart {
     final Map<String, dynamic> attributes = currentAttributes != null ? Map.from(currentAttributes) : {};
 
     // Extract custom attributes from the <pullquote> element
+    // The attributes represents the data into a html tag
+    // at this point, <pullquote> should have these attributes
+    //
+    // <pullquote data-author="John Doe" data-style="italic">
+    // These attributes can be optional, so do you need to ensure to not use "!" 
+    // to avoid any null conflict
     final author = element.attributes['data-author'];
     final style = element.attributes['data-style'];
 

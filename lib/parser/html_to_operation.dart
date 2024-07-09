@@ -10,10 +10,14 @@ abstract class HtmlOperations {
   List<CustomHtmlPart>? customBlocks;
 
   ///Use this method to add full logic for comparate which type html tag is the current item on loop
+  ///By default this just verify and call the others methods, and override it is optional
   List<Operation> resolveCurrentElement(dom.Element element) {
     List<Operation> ops = [];
     if (element.localName == null) return ops;
     //inlines
+    //the current element could be into a <li> then it's node can be
+    //a <strong> or a <em>, or even a <span> then we first need to verify
+    //if a inline an store into it to parse the attributes as we need
     if (isInline(element.localName!)) {
       final Delta delta = Delta();
       final Map<String, dynamic> attributes = {};
@@ -66,7 +70,11 @@ abstract class HtmlOperations {
   ///Used when detect a link html tag <blockquote>
   List<Operation> blockquoteToOp(dom.Element element);
 
-  void setCustomBlocks(List<CustomHtmlPart> customBlocks) {
+  void setCustomBlocks(List<CustomHtmlPart> customBlocks, {bool overrideCurrentBlocks = false}) {
+    if (this.customBlocks != null && !overrideCurrentBlocks) {
+      this.customBlocks!.addAll(customBlocks);
+      return;
+    }
     this.customBlocks = [...customBlocks];
   }
 }
@@ -254,10 +262,18 @@ class DefaultHtmlToOperations extends HtmlOperations {
   @override
   List<Operation> videoToOp(dom.Element element) {
     final String src = element.attributes['src'] ?? '';
+    final String sourceSrc =
+        element.nodes.where((node) => node.nodeType == dom.Node.ELEMENT_NODE).firstOrNull?.attributes['src'] ?? '';
     if (src.isNotEmpty) {
       return [
         Operation.insert('\n'),
         Operation.insert({'video': src})
+      ];
+    }
+    if (sourceSrc.isNotEmpty) {
+      return [
+        Operation.insert('\n'),
+        Operation.insert({'video': sourceSrc})
       ];
     }
     return [];

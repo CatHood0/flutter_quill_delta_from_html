@@ -1,5 +1,6 @@
 ///validate the string color to avoid unsupported colors
 String validateAndGetColor(String colorString) {
+  //verify if the color already is a hex
   if (colorString.startsWith('#')) return colorString;
   return colorToHex(colorString);
 }

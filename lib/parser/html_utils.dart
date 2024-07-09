@@ -70,6 +70,7 @@ Map<String, dynamic> parseStyleAttribute(String style) {
 }
 
 ///Store within the node getting text nodes, spans nodes, link nodes, and attributes to apply for the delta
+///This only used store the inline attributes or tags into a <p> or a <h1> or <span> without insert block attributes
 void processNode(
   dom.Node node,
   Map<String, dynamic> attributes,
@@ -99,6 +100,7 @@ void processNode(
         }
       }
     } else {
+      ///the current node is <span>
       if (node.isSpan) {
         final spanAttributes = parseStyleAttribute(node.attributes['style'] ?? '');
         if (addSpanAttrs) {
@@ -107,18 +109,21 @@ void processNode(
           newAttributes.addAll({...spanAttributes});
         }
       }
+      ///the current node is <a>
       if (node.isLink) {
         final String? src = node.attributes['href'];
         if (src != null) {
           newAttributes['link'] = src;
         }
       }
+      ///the current node is <br>
       if (node.isBreakLine) {
         newAttributes.remove('align');
         newAttributes.remove('direction');
         delta.insert('\n', newAttributes);
       }
     }
+    ///Store on the nodes into the current one
     for (final child in node.nodes) {
       processNode(child, newAttributes, delta, addSpanAttrs: addSpanAttrs);
     }

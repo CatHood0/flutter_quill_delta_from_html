@@ -1,6 +1,11 @@
+## 1.2.3
+
+* doc(README): added more documentation about CustomHtmlPart
+* doc: added more doc comments about general functionalities of the classes and methods
+
 ## 1.2.2
 
-* Feat: added support for data-checked attribute for <li> tags
+* Feat: added support for data-checked attribute for `<li>`  tags
 * Fix: removed duplicated getting inline attributes at resolveCurrentElement
 
 ## 1.2.1

@@ -16,6 +16,7 @@ class HtmlToDelta {
     this.customBlocks,
   }) {
     htmlToOp = htmlToOperations ?? DefaultHtmlToOperations();
+    //this part ensure to set the customBlocks passed at the constructor
     htmlToOp.setCustomBlocks(customBlocks ?? []);
   }
 
@@ -34,6 +35,8 @@ class HtmlToDelta {
     final List<dom.Node> nodesToProcess = $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (var node in nodesToProcess) {
+      //first just verify if the customBlocks aren't empty and then store on them to
+      //validate if one of them make match with the current Node
       if (customBlocks != null && customBlocks!.isNotEmpty && node is dom.Element) {
         for (var customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
