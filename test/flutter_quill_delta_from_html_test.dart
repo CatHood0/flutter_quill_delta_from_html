@@ -47,6 +47,39 @@ void main() {
       expect(delta, expectedDelta);
     });
 
+    test('Paragraph with different font-size unit type', () {
+      const htmlSmall = '<p style="font-size: 0.75em">This is a paragraph example</p>';
+      const htmlHuge = '<p style="font-size: 2.5em">This is a paragraph example 2</p>';
+      const htmlLarge = '<p style="font-size: 1.5em">This is a paragraph example 3</p>';
+      const htmlCustomSize = '<p style="font-size: 12pt">This is a paragraph example 4</p>';
+      final converter = HtmlToDelta();
+      final deltaSmall = converter.convert(htmlSmall);
+      final deltaLarge = converter.convert(htmlLarge);
+      final deltaHuge = converter.convert(htmlHuge);
+      final deltaCustom = converter.convert(htmlCustomSize);
+
+      final expectedDeltaSmall = Delta()
+        ..insert('This is a paragraph example', {"size": "small"})
+        ..insert('\n');
+
+      final expectedDeltaHuge = Delta()
+        ..insert('This is a paragraph example 2', {"size": "huge"})
+        ..insert('\n');
+
+      final expectedDeltaLarge = Delta()
+        ..insert('This is a paragraph example 3', {"size": "large"})
+        ..insert('\n');
+
+      final expectedDeltaCustom = Delta()
+        ..insert('This is a paragraph example 4', {"size": "15"})
+        ..insert('\n');
+
+      expect(deltaSmall, expectedDeltaSmall);
+      expect(deltaLarge, expectedDeltaLarge);
+      expect(deltaHuge, expectedDeltaHuge);
+      expect(deltaCustom, expectedDeltaCustom);
+    });
+
     test('Paragraph to RTL', () {
       const html = '<p dir="rtl">This is a RTL paragraph example</p>';
       final converter = HtmlToDelta();

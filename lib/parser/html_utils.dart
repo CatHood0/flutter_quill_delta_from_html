@@ -1,8 +1,11 @@
 import 'package:dart_quill_delta/dart_quill_delta.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
 import 'package:html/dom.dart' as dom;
 import 'colors.dart';
 import 'custom_html_part.dart';
+import 'font_size_parser.dart';
+import 'line_height_parser.dart';
 
 ///verify if the tag is from a inline html tag attribute
 bool isInline(String tag) {
@@ -15,6 +18,7 @@ Map<String, dynamic> parseStyleAttribute(String style) {
   if (style.isEmpty) return attributes;
 
   final styles = style.split(';');
+  double? fontSize ;
   for (var style in styles) {
     final parts = style.split(':');
     if (parts.length == 2) {
@@ -34,14 +38,41 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           attributes['background'] = color;
           break;
         case 'font-size':
-          attributes['size'] = value.replaceAll('px', '').replaceAll('em', '').replaceAll('vm', '');
+          String? sizeToPass;
+          //Those are the default values used by [vsc_quill_delta_to_html]
+          if (value == '0.75em') {
+            fontSize = 10;
+            sizeToPass = 'small';
+          } else if (value == '1.5em') {
+            fontSize = 18;
+            sizeToPass = 'large';
+          } else if (value == '2.5em') {
+            fontSize = 22;
+            sizeToPass = 'huge';
+          } else {
+            try {
+              final size = parseSizeToPx(value);
+              if (size <= 10) {
+                fontSize = 10;
+                sizeToPass = 'small';
+              } else {
+                fontSize = size.floorToDouble();
+                sizeToPass = '${size.floor()}';
+              }
+            } on UnsupportedError catch (e) {
+              debugPrint(e.message);
+              debugPrintStack(stackTrace: e.stackTrace);
+              break;
+            }
+          }
+          attributes['size'] = sizeToPass;
           break;
         case 'font-family':
           attributes['font'] = value;
           break;
         case 'line-height':
-          attributes['line-height'] =
-              double.parse(value.replaceAll('px', '').replaceAll('em', '').replaceAll('vm', ''));
+        final lineHeight = parseLineHeight(value, fontSize: fontSize ?? 16.0);
+          attributes['line-height'] = lineHeight;
           break;
         default:
           break;
@@ -109,6 +140,7 @@ void processNode(
           newAttributes.addAll({...spanAttributes});
         }
       }
+
       ///the current node is <a>
       if (node.isLink) {
         final String? src = node.attributes['href'];
@@ -116,6 +148,7 @@ void processNode(
           newAttributes['link'] = src;
         }
       }
+
       ///the current node is <br>
       if (node.isBreakLine) {
         newAttributes.remove('align');
@@ -123,6 +156,7 @@ void processNode(
         delta.insert('\n', newAttributes);
       }
     }
+
     ///Store on the nodes into the current one
     for (final child in node.nodes) {
       processNode(child, newAttributes, delta, addSpanAttrs: addSpanAttrs);
