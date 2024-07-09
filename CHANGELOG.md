@@ -1,3 +1,7 @@
+## 1.2.5
+
+* Feat: added support for div
+
 ## 1.2.4
 
 * Fix: font-size is parsed wrong by unsupported unit type 

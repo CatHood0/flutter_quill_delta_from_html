@@ -151,8 +151,7 @@ void main() {
     });
 
     test('Checklist', () {
-      const html =
-          '<ul><li data-checked="true">First item</li><li data-checked="false">Second item</li></ul>';
+      const html = '<ul><li data-checked="true">First item</li><li data-checked="false">Second item</li></ul>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -259,5 +258,38 @@ void main() {
       ..insert('Regular paragraph after the custom block\n');
 
     expect(delta, equals(expectedDelta));
+  });
+
+  test('Div with mixed content', () {
+    const html =
+        '<div><p>Paragraph inside div.</p><h1>Header inside div</h1><ul><li>List item 1</li><li data-checked="false">List item 2</li></ul></div>';
+
+    const htmlReversed =
+        '<div><h1>Paragraph inside div.</h1><p>Header inside div</p><ul><li>List item 1</li><li data-checked="false">List item 2</li></ul></div>';
+    final converter = HtmlToDelta();
+    final delta = converter.convert(html);
+    final deltaReversed = converter.convert(htmlReversed);
+
+    final expectedDelta = Delta()
+      ..insert('Paragraph inside div.\nHeader inside div')
+      ..insert('\n', {'header': 1})
+      ..insert('List item 1')
+      ..insert('\n', {'list': 'bullet'})
+      ..insert('List item 2')
+      ..insert('\n', {'list': 'unchecked'})
+      ..insert('\n');
+
+    final expectedDeltaRevered = Delta()
+      ..insert('Paragraph inside div.')
+      ..insert('\n', {'header': 1})
+      ..insert('Header inside div\n')
+      ..insert('List item 1')
+      ..insert('\n', {'list': 'bullet'})
+      ..insert('List item 2')
+      ..insert('\n', {'list': 'unchecked'})
+      ..insert('\n');
+
+    expect(delta, expectedDelta);
+    expect(deltaReversed, expectedDeltaRevered);
   });
 }

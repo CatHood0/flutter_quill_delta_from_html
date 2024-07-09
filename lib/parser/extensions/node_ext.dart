@@ -30,18 +30,14 @@ extension NodeExt on Element {
   bool get isSpan => localName == 'span';
 
   ///Ensure to detect h(1-6) html tags
-  bool get isHeader =>
-      localName != null && localName!.contains(RegExp('h[1-6]'));
+  bool get isHeader => localName != null && localName!.contains(RegExp('h[1-6]'));
 
   ///Ensure to detect img html tags
   bool get isImg => localName == 'img';
 
   ///Ensure to detect li,ul,ol,<input type=checkbox> html tags
   bool get isList =>
-      localName == 'li' ||
-      localName == 'ul' ||
-      localName == 'ol' ||
-      querySelector('input[type="checkbox"]') != null;
+      localName == 'li' || localName == 'ul' || localName == 'ol' || querySelector('input[type="checkbox"]') != null;
 
   ///Ensure to detect video html tags
   bool get isVideo => localName == 'video' || localName == 'iframe';
@@ -54,4 +50,7 @@ extension NodeExt on Element {
 
   ///Ensure to detect pre,code html tags
   bool get isCodeBlock => localName == 'pre' || localName == 'code';
+
+  ///Ensure to detect div html tags
+  bool get isDivBlock => localName == 'div';
 }

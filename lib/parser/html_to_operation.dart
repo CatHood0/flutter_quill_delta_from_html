@@ -47,6 +47,7 @@ abstract class HtmlOperations {
     if (element.isVideo) ops.addAll(videoToOp(element));
     if (element.isBlockquote) ops.addAll(blockquoteToOp(element));
     if (element.isCodeBlock) ops.addAll(codeblockToOp(element));
+    if (element.isDivBlock) ops.addAll(divToOp(element));
     return ops;
   }
 
@@ -79,6 +80,9 @@ abstract class HtmlOperations {
 
   /// Converts a blockquote HTML element (`<blockquote>`) to Delta operations.
   List<Operation> blockquoteToOp(dom.Element element);
+
+  /// Converts a div HTML element (`<div>`) to Delta operations.
+  List<Operation> divToOp(dom.Element element);
 
   /// Sets custom HTML parts to extend the conversion capabilities.
   ///
@@ -217,6 +221,33 @@ class DefaultHtmlToOperations extends HtmlOperations {
       blockAttributes.removeWhere((key, value) => value == null);
       delta.insert('\n', blockAttributes);
     }
+    return delta.toList();
+  }
+
+  @override
+  List<Operation> divToOp(dom.Element element) {
+    final Delta delta = Delta();
+    Map<String, dynamic> attributes = {};
+
+    if (element.attributes.containsKey('style')) {
+      final String style = element.attributes['style']!;
+      final styleAttributes = parseStyleAttribute(style);
+      attributes.addAll(styleAttributes);
+    }
+    for (final node in element.nodes) {
+      if (node.nodeType == dom.Node.TEXT_NODE) {
+        delta.insert(node.text);
+      } else if (node.nodeType == dom.Node.ELEMENT_NODE) {
+        final ops = resolveCurrentElement(node as dom.Element);
+        for (final op in ops) {
+          delta.insert(op.data, op.attributes);
+        }
+        if (node.isParagraph) {
+          delta.insert('\n');
+        }
+      }
+    }
+
     return delta.toList();
   }
 
