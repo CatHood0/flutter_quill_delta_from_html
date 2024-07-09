@@ -1,3 +1,14 @@
+// constant centimeters multiplier
+const double cmSizeMultiplier = 37.7952755906;
+// constant millimeters multiplier
+const double mmSizeMultiplier = 3.7795275591;
+// constant inches multiplier
+const double inchSizeMultiplier = 96;
+// constant points multiplier
+const double pointSizeMultiplier = 1.3333333333;
+// constant picas multiplier
+const double picasSizeMultiplier = 16;
+
 /// Converts various CSS units to pixels (px).
 ///
 /// This function supports the following units:
@@ -29,11 +40,6 @@
 /// [rootFontSize] is the font-size of the root element, used for `rem` units.
 ///
 /// Returns the equivalent value in pixels.
-const double cmSizeMultiplier = 37.7952755906;
-const double mmSizeMultiplier = 3.7795275591;
-const double inchSizeMultiplier = 96;
-const double pointSizeMultiplier = 1.3333333333;
-const double picasSizeMultiplier = 16;
 double parseSizeToPx(
   String value, {
   double fontSizeEmMultiplier = 16.0,

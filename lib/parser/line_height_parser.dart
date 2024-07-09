@@ -1,3 +1,5 @@
+/// constant common line-height multiplier 
+const normalLineHeightMultiplier = 1.2;
 /// Parses a CSS `line-height` value to a pixel value based on the specified [fontSize] and optional [rootFontSize].
 ///
 /// Supports unitless values, percentages, pixels (`px`), ems (`em`), rems (`rem`), and the keyword `normal`.
@@ -25,7 +27,6 @@
 /// print(parseLineHeight('1.5em')); // 24.0 (16 * 1.5)
 /// print(parseLineHeight('1.2rem')); // 19.2 (16 * 1.2)
 /// ```
-const normalLineHeightMultiplier = 1.2;
 double parseLineHeight(String lineHeight, {double fontSize = 16, double rootFontSize = 16}) {
   // Convert line-height values
   double parsedValue;
