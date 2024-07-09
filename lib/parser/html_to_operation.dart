@@ -4,20 +4,30 @@ import 'package:flutter_quill_delta_from_html/parser/html_utils.dart';
 import 'package:html/dom.dart' as dom;
 import 'custom_html_part.dart';
 
-///HtmlOperations are a class that contains all necessary methods for
-///Convert html (the supported ones) to valid operations for delta
+/// Operations for converting supported HTML elements to Delta operations.
+///
+/// This abstract class defines methods for converting various HTML elements
+/// into Delta operations, which are used for rich text editing.
 abstract class HtmlOperations {
   List<CustomHtmlPart>? customBlocks;
 
-  ///Use this method to add full logic for comparate which type html tag is the current item on loop
-  ///By default this just verify and call the others methods, and override it is optional
+  /// Resolves the current HTML element into Delta operations.
+  ///
+  /// Determines the type of HTML element and converts it into corresponding Delta operations.
+  ///
+  /// Parameters:
+  /// - [element]: The HTML element to convert into Delta operations.
+  ///
+  /// Returns:
+  /// A list of Delta operations corresponding to the HTML element.
   List<Operation> resolveCurrentElement(dom.Element element) {
     List<Operation> ops = [];
     if (element.localName == null) return ops;
-    //inlines
-    //the current element could be into a <li> then it's node can be
-    //a <strong> or a <em>, or even a <span> then we first need to verify
-    //if a inline an store into it to parse the attributes as we need
+    // Inlines
+    //
+    // the current element could be into a <li> then it's node can be
+    // a <strong> or a <em>, or even a <span> then we first need to verify
+    // if a inline an store into it to parse the attributes as we need
     if (isInline(element.localName!)) {
       final Delta delta = Delta();
       final Map<String, dynamic> attributes = {};
@@ -26,7 +36,7 @@ abstract class HtmlOperations {
       }
       ops.addAll(delta.toList());
     }
-    //blocks
+    // Blocks
     if (element.isBreakLine) ops.addAll(brToOp(element));
     if (element.isParagraph) ops.addAll(paragraphToOp(element));
     if (element.isHeader) ops.addAll(headerToOp(element));
@@ -40,36 +50,41 @@ abstract class HtmlOperations {
     return ops;
   }
 
-  ///Add a new line by default
+  /// Converts a `<br>` HTML element to Delta operations.
   List<Operation> brToOp(dom.Element element);
 
-  ///Used when detect a header html tag
+  /// Converts a header HTML element (`<h1>` to `<h6>`) to Delta operations.
   List<Operation> headerToOp(dom.Element element);
 
-  ///Used when detect a list html tag (ul, li, ol,<input type="checkbox">)
+  /// Converts list HTML elements (`<ul>`, `<ol>`, `<li>`) to Delta operations.
   List<Operation> listToOp(dom.Element element);
 
-  ///Used when detect a paragraph html tag <p>
+  /// Converts a paragraph HTML element (`<p>`) to Delta operations.
   List<Operation> paragraphToOp(dom.Element element);
 
-  ///Used when detect a link html tag <a>
+  /// Converts a link HTML element (`<a>`) to Delta operations.
   List<Operation> linkToOp(dom.Element element);
 
-  ///Used when detect a link html tag <span>
+  /// Converts a span HTML element (`<span>`) to Delta operations.
   List<Operation> spanToOp(dom.Element element);
 
-  ///Used when detect a link html tag <img>
+  /// Converts an image HTML element (`<img>`) to Delta operations.
   List<Operation> imgToOp(dom.Element element);
 
-  ///Used when detect a link html tag <video>
+  /// Converts a video HTML element (`<video>`) to Delta operations.
   List<Operation> videoToOp(dom.Element element);
 
-  ///Used when detect a link html tag <pre>
+  /// Converts a code block HTML element (`<pre>`) to Delta operations.
   List<Operation> codeblockToOp(dom.Element element);
 
-  ///Used when detect a link html tag <blockquote>
+  /// Converts a blockquote HTML element (`<blockquote>`) to Delta operations.
   List<Operation> blockquoteToOp(dom.Element element);
 
+  /// Sets custom HTML parts to extend the conversion capabilities.
+  ///
+  /// Parameters:
+  /// - [customBlocks]: List of custom HTML parts to add.
+  /// - [overrideCurrentBlocks]: Flag to override existing custom blocks.
   void setCustomBlocks(List<CustomHtmlPart> customBlocks, {bool overrideCurrentBlocks = false}) {
     if (this.customBlocks != null && !overrideCurrentBlocks) {
       this.customBlocks!.addAll(customBlocks);
@@ -79,7 +94,11 @@ abstract class HtmlOperations {
   }
 }
 
-///Default implementation of this package to parse common html to operation
+/// Default implementation of `HtmlOperations` for converting common HTML to Delta operations.
+///
+/// This class provides default implementations for converting common HTML elements
+/// like paragraphs, headers, lists, links, images, videos, code blocks, and blockquotes
+/// into Delta operations.
 class DefaultHtmlToOperations extends HtmlOperations {
   DefaultHtmlToOperations();
 

@@ -5,12 +5,32 @@ import 'package:html/parser.dart' as dparser;
 
 /// Default converter for html to Delta
 class HtmlToDelta {
-  ///Defines all custom blocks for non common html tags
+  /// List of custom HTML parts to handle non-common HTML tags.
+  ///
+  /// These custom blocks define how to convert specific HTML tags into Delta operations.
+  ///
+  /// Example:
+  /// ```dart
+  /// final converter = HtmlToDelta(customBlocks: [
+  ///   MyCustomHtmlPart(
+  ///     matches: (element) => element.localName == 'my-custom-tag',
+  ///     convert: (element) {
+  ///       return [
+  ///         Operation.insert({"custom-tag": element.text})
+  ///       ];
+  ///     },
+  ///   ),
+  /// ]);
+  /// ```
   final List<CustomHtmlPart>? customBlocks;
 
-  ///Defines how will be builded the common tags to Delta Operations
+  /// Converts HTML tags to Delta operations based on defined rules.
   late HtmlOperations htmlToOp;
 
+  /// Creates a new instance of HtmlToDelta.
+  ///
+  /// [htmlToOperations] defines how common HTML tags are converted to Delta operations.
+  /// [customBlocks] allows adding custom rules for handling specific HTML tags.
   HtmlToDelta({
     HtmlOperations? htmlToOperations,
     this.customBlocks,
@@ -20,11 +40,22 @@ class HtmlToDelta {
     htmlToOp.setCustomBlocks(customBlocks ?? []);
   }
 
-  /// Converts HTML text into Delta operations.
+  /// Converts an HTML string into Delta operations.
   ///
-  /// Takes an HTML string [htmlText] and converts it into Delta operations using
-  /// QuillJS-compatible attributes. Custom blocks can be applied based on registered
-  /// [customBlocks]. Returns a Delta object representing the formatted content
+  /// Converts the HTML string [htmlText] into Delta operations using QuillJS-compatible attributes.
+  /// Custom blocks can be applied based on registered [customBlocks].
+  ///
+  /// Parameters:
+  /// - [htmlText]: The HTML string to convert into Delta operations.
+  ///
+  /// Returns:
+  /// A Delta object representing the formatted content from HTML.
+  ///
+  /// Example:
+  /// ```dart
+  /// final delta = converter.convert('<p>Hello <strong>world</strong></p>');
+  /// print(delta.toJson()); // Output: [{"insert":"Hello "},{"insert":"world","attributes":{"bold":true}},{"insert":"\n"}]
+  /// ```
   Delta convert(String htmlText) {
     final Delta delta = Delta();
     final dom.Document $document = dparser.parse(htmlText);
@@ -60,12 +91,23 @@ class HtmlToDelta {
     return delta;
   }
 
-  /// Converts a full DOM document [document] into Delta operations.
+  /// Converts a full DOM document into Delta operations.
   ///
-  /// Processes the entire DOM document [document] and converts its nodes into Delta
-  /// operations using QuillJS-compatible attributes. Custom blocks can be applied
-  /// based on registered [customBlocks]. Returns a Delta object representing the
-  /// formatted content.
+  /// Processes the entire DOM document [$document] and converts its nodes into Delta operations.
+  /// Custom blocks can be applied based on registered [customBlocks].
+  ///
+  /// Parameters:
+  /// - [$document]: The DOM document to convert into Delta operations.
+  ///
+  /// Returns:
+  /// A Delta object representing the formatted content from the DOM document.
+  ///
+  /// Example:
+  /// ```dart
+  /// final document = dparser.parse('<p>Hello <strong>world</strong></p>');
+  /// final delta = converter.convertDocument(document);
+  /// print(delta.toJson()); // Output: [{"insert":"Hello "},{"insert":"world","attributes":{"bold":true}},{"insert":"\n"}]
+  /// ```
   Delta convertDocument(dom.Document $document) {
     final Delta delta = Delta();
     final dom.Element? $body = $document.body;
@@ -98,11 +140,22 @@ class HtmlToDelta {
     return delta;
   }
 
-  /// Converts a single DOM [node] into Delta operations using [htmlToOp].
+  /// Converts a single DOM node into Delta operations using [htmlToOp].
   ///
-  /// Processes a single DOM node [node] and converts it into Delta operations
-  /// using the provided [htmlToOp] instance. Returns a list of Operation objects
-  /// representing the formatted content
+  /// Processes a single DOM [node] and converts it into Delta operations using the provided [htmlToOp] instance.
+  ///
+  /// Parameters:
+  /// - [node]: The DOM node to convert into Delta operations.
+  ///
+  /// Returns:
+  /// A list of Operation objects representing the formatted content of the node.
+  ///
+  /// Example:
+  /// ```dart
+  /// final node = dparser.parseFragment('<strong>Hello</strong>');
+  /// final operations = converter.nodeToOperation(node.firstChild!, converter.htmlToOp);
+  /// print(operations); // Output: [Operation{insert: "Hello", attributes: {bold: true}}]
+  /// ```
   List<Operation> nodeToOperation(dom.Node node, HtmlOperations htmlToOp) {
     List<Operation> operations = [];
     if (node is dom.Text) {

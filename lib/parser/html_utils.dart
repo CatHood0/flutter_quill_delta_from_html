@@ -7,18 +7,42 @@ import 'custom_html_part.dart';
 import 'font_size_parser.dart';
 import 'line_height_parser.dart';
 
-///verify if the tag is from a inline html tag attribute
+/// Checks if the given [tag] corresponds to an inline HTML element.
+///
+/// Inline elements include: 'i', 'em', 'u', 'ins', 's', 'del', 'b', 'strong', 'sub', 'sup'.
+///
+/// Parameters:
+/// - [tag]: The HTML tag name to check.
+///
+/// Returns:
+/// `true` if [tag] is an inline element, `false` otherwise.
 bool isInline(String tag) {
   return ["i", "em", "u", "ins", "s", "del", "b", "strong", "sub", "sup"].contains(tag);
 }
 
-///get all attributes from a tag, and parse to Delta attributes
+/// Parses a CSS style attribute string into Delta attributes.
+///
+/// Converts CSS styles (like 'text-align', 'color', 'font-size', etc.) from [style]
+/// into Quill Delta attributes suitable for rich text formatting.
+///
+/// Parameters:
+/// - [style]: The CSS style attribute string to parse.
+///
+/// Returns:
+/// A map of Delta attributes derived from the CSS styles.
+///
+/// Example:
+/// ```dart
+/// final style = 'color: #ff0000; font-size: 16px;';
+/// print(parseStyleAttribute(style)); // Output: {'color': '#ff0000', 'size': '16'}
+/// ```
 Map<String, dynamic> parseStyleAttribute(String style) {
   Map<String, dynamic> attributes = {};
   if (style.isEmpty) return attributes;
 
   final styles = style.split(';');
-  double? fontSize ;
+  double? fontSize;
+
   for (var style in styles) {
     final parts = style.split(':');
     if (parts.length == 2) {
@@ -39,7 +63,8 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           break;
         case 'font-size':
           String? sizeToPass;
-          //Those are the default values used by [vsc_quill_delta_to_html]
+
+          // Handle default values used by [vsc_quill_delta_to_html]
           if (value == '0.75em') {
             fontSize = 10;
             sizeToPass = 'small';
@@ -71,7 +96,7 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           attributes['font'] = value;
           break;
         case 'line-height':
-        final lineHeight = parseLineHeight(value, fontSize: fontSize ?? 16.0);
+          final lineHeight = parseLineHeight(value, fontSize: fontSize ?? 16.0);
           attributes['line-height'] = lineHeight;
           break;
         default:
@@ -84,7 +109,7 @@ Map<String, dynamic> parseStyleAttribute(String style) {
         case 'rtl':
           attributes['direction'] = 'rtl';
         case 'true' || 'false':
-          //then is check list
+          // Treat as check list
           if (style == 'true') {
             attributes['list'] = 'checked';
           } else {
@@ -100,8 +125,25 @@ Map<String, dynamic> parseStyleAttribute(String style) {
   return attributes;
 }
 
-///Store within the node getting text nodes, spans nodes, link nodes, and attributes to apply for the delta
-///This only used store the inline attributes or tags into a <p> or a <h1> or <span> without insert block attributes
+/// Processes a DOM [node], converting it into Quill Delta operations.
+///
+/// Recursively processes the DOM nodes, converting text nodes, inline styles,
+/// links, and custom HTML blocks into Quill Delta operations.
+///
+/// Parameters:
+/// - [node]: The DOM node to process.
+/// - [attributes]: The current Delta attributes to apply.
+/// - [delta]: The Delta object to push operations into.
+/// - [addSpanAttrs]: Whether to add attributes from <span> tags.
+/// - [customBlocks]: Optional list of custom HTML block definitions.
+///
+/// Example:
+/// ```dart
+/// final htmlNode = dom.Element.tag('p')..append(dom.Text('Hello, <strong><em>World</em></strong>!'));
+/// final delta = Delta();
+/// processNode(htmlNode, {}, delta);
+/// print(delta.toJson()); // Output: [{"insert": "Hello, "}, {"insert": "World", "attributes": {"italic": true, "bold": true}}, {"insert": "!"}]
+/// ```
 void processNode(
   dom.Node node,
   Map<String, dynamic> attributes,
@@ -113,13 +155,16 @@ void processNode(
     delta.insert(node.text, attributes.isEmpty ? null : attributes);
   } else if (node is dom.Element) {
     Map<String, dynamic> newAttributes = Map.from(attributes);
+
+    // Apply inline styles based on tag type
     if (node.isStrong) newAttributes['bold'] = true;
     if (node.isItalic) newAttributes['italic'] = true;
     if (node.isUnderline) newAttributes['underline'] = true;
     if (node.isStrike) newAttributes['strike'] = true;
     if (node.isSubscript) newAttributes['script'] = 'sub';
     if (node.isSuperscript) newAttributes['script'] = 'super';
-    //use custom block since them can be into any html tag
+
+    // Use custom block definitions if provided
     if (customBlocks != null && customBlocks.isNotEmpty) {
       for (var customBlock in customBlocks) {
         if (customBlock.matches(node)) {
@@ -131,17 +176,17 @@ void processNode(
         }
       }
     } else {
-      ///the current node is <span>
+      // Handle <span> tags
       if (node.isSpan) {
         final spanAttributes = parseStyleAttribute(node.attributes['style'] ?? '');
         if (addSpanAttrs) {
           newAttributes.remove('align');
           newAttributes.remove('direction');
-          newAttributes.addAll({...spanAttributes});
+          newAttributes.addAll(spanAttributes);
         }
       }
 
-      ///the current node is <a>
+      // Handle <a> tags (links)
       if (node.isLink) {
         final String? src = node.attributes['href'];
         if (src != null) {
@@ -149,7 +194,7 @@ void processNode(
         }
       }
 
-      ///the current node is <br>
+      // Handle <br> tags (line breaks)
       if (node.isBreakLine) {
         newAttributes.remove('align');
         newAttributes.remove('direction');
@@ -157,7 +202,7 @@ void processNode(
       }
     }
 
-    ///Store on the nodes into the current one
+    // Recursively process child nodes
     for (final child in node.nodes) {
       processNode(child, newAttributes, delta, addSpanAttrs: addSpanAttrs);
     }
