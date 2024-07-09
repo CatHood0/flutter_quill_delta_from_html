@@ -58,6 +58,8 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
 ```html
   <!--Text indent-->
   <p style="padding: 10px"> 
+  <!--Containers-->
+  <div></div>
 ```
 
 ## Getting Started
@@ -66,7 +68,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.2.3
+  flutter_quill_delta_from_html: ^1.2.4
 ```
 
 Then, import the package and use it in your Flutter application:

@@ -1,3 +1,9 @@
+## 1.2.4
+
+* Fix: font-size is parsed wrong by unsupported unit type 
+* Feat: added support for more unit types
+* doc: added more general documentation 
+
 ## 1.2.3
 
 * doc(README): added more documentation about CustomHtmlPart
