@@ -1,4 +1,4 @@
-## 1.2.71
+## 1.2.8
 
 * Fix: indent level is invalid for Delta format
 
