@@ -1,8 +1,8 @@
 # Flutter Quill Delta from HTML
 
-This is a Dart package that converts HTML input into Quill Delta format, which is used in the `flutter_quill` package. This allows developers to easily convert `HTML` content to a format that can be displayed and edited using the Quill rich text editor in Flutter applications.
+This is a **Dart** package that converts **HTML** input into Quill **Delta** format, which is used in the `flutter_quill` package. This allows developers to easily convert `HTML` content to a format that can be displayed and edited using the **Quill rich text** editor in Flutter applications.
 
-**This package** supports the conversion of a wide range of HTML tags and attributes into their corresponding Delta operations, ensuring that your HTML content is accurately represented in the Quill editor.
+**This package** supports the conversion of a wide range of **HTML** tags and attributes into their corresponding **Delta** operations, ensuring that your **HTML** content is accurately represented in the **Quill editor**.
 
 ## Supported tags
 
@@ -18,7 +18,7 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
     <!--Headings-->
         <h1> to <h6>: Headings of various levels
 
-    <!--Lists-->
+    <!--Lists and nested ones-->
         <ul>: Unordered lists
         <ol>: Ordered lists
         <li>: List items
@@ -61,7 +61,6 @@ This is a Dart package that converts HTML input into Quill Delta format, which i
 ```html
   <!--Text indent-->
   <p style="padding: 10px"> 
-  <!--Containers-->
 ```
 
 ## Getting Started
@@ -70,7 +69,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.2.5
+  flutter_quill_delta_from_html: ^1.2.6
 ```
 
 Then, import the package and use it in your Flutter application:
@@ -191,11 +190,11 @@ abstract class HtmlOperations {
   //You don't need to override this method 
   //as it simply calls the other methods 
   //to detect the type of HTML tag
-  List<Operation> resolveCurrentElement(dom.Element element);
+  List<Operation> resolveCurrentElement(dom.Element element, [int indentLevel = 0]);
 
   List<Operation> brToOp(dom.Element element);
   List<Operation> headerToOp(dom.Element element);
-  List<Operation> listToOp(dom.Element element);
+  List<Operation> listToOp(dom.Element element, [int indentLevel = 0]);
   List<Operation> paragraphToOp(dom.Element element);
   List<Operation> linkToOp(dom.Element element);
   List<Operation> spanToOp(dom.Element element);

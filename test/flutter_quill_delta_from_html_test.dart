@@ -150,6 +150,27 @@ void main() {
       expect(delta, expectedDelta);
     });
 
+    test('Nested list', () {
+      const html = '<ol><li>First item<ul><li>SubItem 1<ol><li>Sub 1.5</li></ol></li><li>SubItem 2</li></ul></li><li>Second item</li></ol>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('First item')
+        ..insert('\n', {'list': 'ordered'})
+        ..insert('SubItem 1')
+        ..insert('\n', {'list': 'bullet', 'indent': 1})
+        ..insert('Sub 1.5')
+        ..insert('\n', {'list': 'ordered', 'indent': 2})
+        ..insert('SubItem 2')
+        ..insert('\n', {'list': 'bullet', 'indent': 1})
+        ..insert('Second item')
+        ..insert('\n', {'list': 'ordered'})
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
     test('Checklist', () {
       const html = '<ul><li data-checked="true">First item</li><li data-checked="false">Second item</li></ul>';
       final converter = HtmlToDelta();

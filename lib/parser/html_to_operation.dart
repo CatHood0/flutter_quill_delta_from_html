@@ -20,7 +20,7 @@ abstract class HtmlOperations {
   ///
   /// Returns:
   /// A list of Delta operations corresponding to the HTML element.
-  List<Operation> resolveCurrentElement(dom.Element element) {
+  List<Operation> resolveCurrentElement(dom.Element element, [int indentLevel = 0]) {
     List<Operation> ops = [];
     if (element.localName == null) return ops;
     // Inlines
@@ -40,7 +40,7 @@ abstract class HtmlOperations {
     if (element.isBreakLine) ops.addAll(brToOp(element));
     if (element.isParagraph) ops.addAll(paragraphToOp(element));
     if (element.isHeader) ops.addAll(headerToOp(element));
-    if (element.isList) ops.addAll(listToOp(element));
+    if (element.isList) ops.addAll(listToOp(element, indentLevel));
     if (element.isSpan) ops.addAll(spanToOp(element));
     if (element.isLink) ops.addAll(linkToOp(element));
     if (element.isImg) ops.addAll(imgToOp(element));
@@ -58,7 +58,7 @@ abstract class HtmlOperations {
   List<Operation> headerToOp(dom.Element element);
 
   /// Converts list HTML elements (`<ul>`, `<ol>`, `<li>`) to Delta operations.
-  List<Operation> listToOp(dom.Element element);
+  List<Operation> listToOp(dom.Element element, [int indentLevel = 0]);
 
   /// Converts a paragraph HTML element (`<p>`) to Delta operations.
   List<Operation> paragraphToOp(dom.Element element);
@@ -252,7 +252,7 @@ class DefaultHtmlToOperations extends HtmlOperations {
   }
 
   @override
-  List<Operation> listToOp(dom.Element element) {
+  List<Operation> listToOp(dom.Element element, [int indentLevel = 0]) {
     final Delta delta = Delta();
     final tagName = element.localName ?? 'ul';
     final Map<String, dynamic> attributes = {};
@@ -273,7 +273,10 @@ class DefaultHtmlToOperations extends HtmlOperations {
         attributes['list'] = 'unchecked';
       }
     }
+    bool ignoreBlockAttributesInsertion = false;
     for (final item in items) {
+      ignoreBlockAttributesInsertion = false;
+      int indent = indentLevel;
       if (checkbox == null) {
         final dataChecked = item.attributes['data-checked'] ?? '';
         final blockAttrs = parseStyleAttribute(dataChecked);
@@ -282,17 +285,29 @@ class DefaultHtmlToOperations extends HtmlOperations {
           attributes['list'] = blockAttrs['list'];
         }
       }
+      if (indentLevel > 0) attributes['indent'] = indentLevel;
       for (final node in item.nodes) {
         if (node.nodeType == dom.Node.TEXT_NODE) {
           delta.insert(node.text);
         } else if (node.nodeType == dom.Node.ELEMENT_NODE) {
-          final ops = resolveCurrentElement(node as dom.Element);
+          final element = node as dom.Element;
+          List<Operation> ops = [];
+          // if found, a element list, into another list, then this is a nested and must insert first the block attributes
+          // to separate the current element from the nested list elements
+          if (element.isList) {
+            indent++;
+            ignoreBlockAttributesInsertion = true;
+            delta.insert('\n', attributes);
+          }
+          ops.addAll(resolveCurrentElement(element, indent));
           for (final op in ops) {
             delta.insert(op.data, op.attributes);
           }
         }
       }
-      delta.insert('\n', attributes);
+      if (!ignoreBlockAttributesInsertion) {
+        delta.insert('\n', attributes);
+      }
     }
 
     return delta.toList();

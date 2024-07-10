@@ -1,3 +1,7 @@
+## 1.2.6
+
+* Feat: added support for nested lists
+
 ## 1.2.5
 
 * Feat: added support for div
