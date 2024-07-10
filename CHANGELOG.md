@@ -1,3 +1,7 @@
+## 1.2.71
+
+* Fix: indent level is invalid for Delta format
+
 ## 1.2.7
 
 * Fix: inline attributes were not detected properly 

@@ -291,6 +291,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
           attributes['list'] = blockAttrs['list'];
         }
       }
+      // force always the max level indentation to be five
+      if (indentLevel > 5) indentLevel = 5;
       if (indentLevel > 0) attributes['indent'] = indentLevel;
       for (final node in item.nodes) {
         if (node.nodeType == dom.Node.TEXT_NODE) {

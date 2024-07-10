@@ -69,7 +69,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.2.7
+  flutter_quill_delta_from_html: ^1.2.71
 ```
 
 Then, import the package and use it in your Flutter application:
