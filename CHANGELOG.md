@@ -1,3 +1,8 @@
+## 1.2.7
+
+* Fix: inlines aren't detected propertly
+* Fix: reverted change from V-1.2.2 where was removed inline attrs validations 
+
 ## 1.2.6
 
 * Feat: added support for nested lists

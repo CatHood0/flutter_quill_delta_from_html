@@ -151,14 +151,17 @@ void main() {
     });
 
     test('Nested list', () {
-      const html = '<ol><li>First item<ul><li>SubItem 1<ol><li>Sub 1.5</li></ol></li><li>SubItem 2</li></ul></li><li>Second item</li></ol>';
+      const html =
+          '<ol><li>First <strong>item</strong><ul><li>SubItem <a href="https://www.google.com">1</a><ol><li>Sub 1.5</li></ol></li><li>SubItem 2</li></ul></li><li>Second item</li></ol>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
       final expectedDelta = Delta()
-        ..insert('First item')
+        ..insert('First ')
+        ..insert('item', {"bold": true})
         ..insert('\n', {'list': 'ordered'})
-        ..insert('SubItem 1')
+        ..insert('SubItem ')
+        ..insert('1', {'link': 'https://www.google.com'})
         ..insert('\n', {'list': 'bullet', 'indent': 1})
         ..insert('Sub 1.5')
         ..insert('\n', {'list': 'ordered', 'indent': 2})
