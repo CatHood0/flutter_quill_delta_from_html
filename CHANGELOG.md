@@ -1,6 +1,6 @@
 ## 1.2.7
 
-* Fix: inlines aren't detected propertly
+* Fix: inline attributes were not detected properly 
 * Fix: reverted change from V-1.2.2 where was removed inline attrs validations 
 
 ## 1.2.6
