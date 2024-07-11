@@ -127,11 +127,15 @@ class DefaultHtmlToOperations extends HtmlOperations {
       final alignAttribute = parseStyleAttribute(styles2 ?? '');
       final dirAttribute = parseStyleAttribute(styles3 ?? '');
       styleAttributes.addAll({...alignAttribute, ...dirAttribute});
-      if (styleAttributes.containsKey('align') || styleAttributes.containsKey('direction')) {
+      if (styleAttributes.containsKey('align') ||
+          styleAttributes.containsKey('direction') ||
+          styleAttributes.containsKey('indent')) {
         blockAttributes['align'] = styleAttributes['align'];
         blockAttributes['direction'] = styleAttributes['direction'];
+        blockAttributes['indent'] = styleAttributes['indent'];
         styleAttributes.remove('align');
         styleAttributes.remove('direction');
+        styleAttributes.remove('indent');
       }
       inlineAttributes.addAll(styleAttributes);
     }
@@ -206,11 +210,15 @@ class DefaultHtmlToOperations extends HtmlOperations {
       final alignAttribute = parseStyleAttribute(styles2 ?? '');
       final dirAttribute = parseStyleAttribute(styles3 ?? '');
       styleAttributes.addAll({...alignAttribute, ...dirAttribute});
-      if (styleAttributes.containsKey('align') || styleAttributes.containsKey('direction')) {
+      if (styleAttributes.containsKey('align') ||
+          styleAttributes.containsKey('direction') ||
+          styleAttributes.containsKey('indent')) {
         blockAttributes['align'] = styleAttributes['align'];
         blockAttributes['direction'] = styleAttributes['direction'];
+        blockAttributes['indent'] = styleAttributes['indent'];
         styleAttributes.remove('align');
         styleAttributes.remove('direction');
+        styleAttributes.remove('indent');
       }
       attributes.addAll(styleAttributes);
     }

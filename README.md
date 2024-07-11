@@ -49,18 +49,10 @@ This is a **Dart** package that converts **HTML** input into Quill **Delta** for
         <p dir="rtl">: Paragraph direction 
 
     <!--Text attributes-->
-        <p style="line-height: 1.0px;font-size: 12px;font-family: Times New Roman;color:#ffffff">: Inline attributes
+        <p style="padding: 10px;line-height: 1.0px;font-size: 12px;font-family: Times New Roman;color:#ffffff">: Inline attributes
     
     <!--Custom Blocks-->
         <pullquote data-author="john">: Custom html
-
-```
-
-## Not supported tags
-
-```html
-  <!--Text indent-->
-  <p style="padding: 10px"> 
 ```
 
 ## Getting Started

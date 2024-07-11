@@ -1,6 +1,7 @@
 import 'package:dart_quill_delta/dart_quill_delta.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
+import 'package:flutter_quill_delta_from_html/parser/indent_parser.dart';
 import 'package:html/dom.dart' as dom;
 import 'colors.dart';
 import 'custom_html_part.dart';
@@ -60,6 +61,12 @@ Map<String, dynamic> parseStyleAttribute(String style) {
         case 'background-color':
           final color = validateAndGetColor(value);
           attributes['background'] = color;
+          break;
+        case 'padding-left' || 'padding-right':
+          final indentation = parseToIndent(value);
+          if (indentation != 0) {
+            attributes['indent'] = indentation;
+          }
           break;
         case 'font-size':
           String? sizeToPass;
@@ -182,6 +189,7 @@ void processNode(
         if (addSpanAttrs) {
           newAttributes.remove('align');
           newAttributes.remove('direction');
+          newAttributes.remove('indent');
           newAttributes.addAll(spanAttributes);
         }
       }
@@ -190,6 +198,7 @@ void processNode(
       if (node.isLink) {
         final String? src = node.attributes['href'];
         if (src != null) {
+          newAttributes.remove('indent');
           newAttributes['link'] = src;
         }
       }
@@ -198,6 +207,7 @@ void processNode(
       if (node.isBreakLine) {
         newAttributes.remove('align');
         newAttributes.remove('direction');
+        newAttributes.remove('indent');
         delta.insert('\n', newAttributes);
       }
     }
