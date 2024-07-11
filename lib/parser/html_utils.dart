@@ -132,6 +132,52 @@ Map<String, dynamic> parseStyleAttribute(String style) {
   return attributes;
 }
 
+/// Parses a CSS `<img>` style attribute string into Delta attributes.
+///
+/// Converts CSS styles (like 'width', 'height', 'margin') from [style]
+/// into Quill Delta attributes suitable for image rich text formatting.
+///
+/// Parameters:
+/// - [style]: The CSS style attribute string to parse.
+///
+/// Returns:
+/// A map of Delta attributes derived from the CSS styles.
+///
+/// Example:
+/// ```dart
+/// final style = 'width: 50px; height: 250px;';
+/// print(parseStyleAttribute(style)); // Output: {'width': '50px', 'height': '250px'}
+/// ```
+Map<String, dynamic> parseImageStyleAttribute(String style) {
+  Map<String, dynamic> attributes = {};
+
+  final styles = style.split(';');
+  for (var style in styles) {
+    final parts = style.split(':');
+    if (parts.length == 2) {
+      final key = parts[0].trim();
+      final value = parts[1].trim();
+
+      switch (key) {
+        case 'width':
+          attributes['width'] = value;
+          break;
+        case 'height':
+          attributes['height'] = value;
+          break;
+        case 'margin':
+          attributes['margin'] = value;
+          break;
+        default:
+          // Ignore other styles
+          break;
+      }
+    }
+  }
+
+  return attributes;
+}
+
 /// Processes a DOM [node], converting it into Quill Delta operations.
 ///
 /// Recursively processes the DOM nodes, converting text nodes, inline styles,

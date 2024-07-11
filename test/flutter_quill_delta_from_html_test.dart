@@ -1,4 +1,5 @@
 import 'package:dart_quill_delta/dart_quill_delta.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 import 'package:flutter_quill_delta_from_html/parser/pullquote_block_example.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -202,13 +203,29 @@ void main() {
       expect(delta, expectedDelta);
     });
 
+    test('Image with styles', () {
+      const html =
+          '<p>This is an image:</p><img align="center" style="width: 50px;height: 250px;margin: 5px;" src="https://example.com/image.png" />';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is an image:')
+        ..insert({'image': 'https://example.com/image.png'},
+            {"style": "width:50px;height:250px;margin:5px;alignment:center"})
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
     test('Code block', () {
       const html = '<pre><code>console.log(\'Hello, world!\');</code></pre>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
       final expectedDelta = Delta()
-        ..insert("console.log('Hello, world!');\n", {'code-block': true})
+        ..insert("console.log('Hello, world!');")
+        ..insert('\n', {'code-block': true})
         ..insert('\n');
 
       expect(delta, expectedDelta);
@@ -220,7 +237,8 @@ void main() {
       final delta = converter.convert(html);
 
       final expectedDelta = Delta()
-        ..insert('This is a blockquote\n', {'blockquote': true})
+        ..insert('This is a blockquote')
+        ..insert('\n', {'blockquote': true})
         ..insert('\n');
 
       expect(delta, expectedDelta);

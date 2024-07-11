@@ -332,9 +332,22 @@ class DefaultHtmlToOperations extends HtmlOperations {
   @override
   List<Operation> imgToOp(dom.Element element) {
     final String src = element.attributes['src'] ?? '';
+    final String styles = element.attributes['style'] ?? '';
+    final String align = element.attributes['align'] ?? '';
+    final attributes = parseImageStyleAttribute(styles);
+    if (align.isNotEmpty) {
+      attributes['alignment'] = align;
+    }
     if (src.isNotEmpty) {
       return [
-        Operation.insert({'image': src})
+        Operation.insert(
+          {'image': src},
+          styles.isEmpty && align.isEmpty
+              ? null
+              : {
+                  'style': attributes.entries.map((entry) => '${entry.key}:${entry.value}').toList().join(';'),
+                },
+        )
       ];
     }
     return [];
@@ -363,13 +376,13 @@ class DefaultHtmlToOperations extends HtmlOperations {
   @override
   List<Operation> blockquoteToOp(dom.Element element) {
     final Delta delta = Delta();
-    Map<String, dynamic> attributes = {'blockquote': true};
+    Map<String, dynamic> blockAttributes = {'blockquote': true};
 
     for (final node in element.nodes) {
-      processNode(node, attributes, delta);
+      processNode(node, {}, delta);
     }
 
-    delta.insert('\n', attributes);
+    delta.insert('\n', blockAttributes);
 
     return delta.toList();
   }
@@ -377,13 +390,13 @@ class DefaultHtmlToOperations extends HtmlOperations {
   @override
   List<Operation> codeblockToOp(dom.Element element) {
     final Delta delta = Delta();
-    Map<String, dynamic> attributes = {'code-block': true};
+    Map<String, dynamic> blockAttributes = {'code-block': true};
 
     for (final node in element.nodes) {
-      processNode(node, attributes, delta);
+      processNode(node, {}, delta);
     }
 
-    delta.insert('\n', attributes);
+    delta.insert('\n', blockAttributes);
 
     return delta.toList();
   }

@@ -40,7 +40,7 @@ extension NodeExt on Element {
       localName == 'li' || localName == 'ul' || localName == 'ol' || querySelector('input[type="checkbox"]') != null;
 
   ///Ensure to detect video html tags
-  bool get isVideo => localName == 'video' || localName == 'iframe';
+  bool get isVideo => localName == 'video';
 
   ///Ensure to detect a html tags
   bool get isLink => localName == 'a';

@@ -29,13 +29,13 @@ This is a **Dart** package that converts **HTML** input into Quill **Delta** for
         <a>: Hyperlinks with support for the href attribute
 
     <!--Images-->
-        <img>: Images with support for the src
+        <img>: Images with support for the src, align, and styles
 
     <!--div-->
         <div>: HTML tag containers
         
     <!--Videos -->
-        <iframe>, <video>: Videos with support for the src
+        <video>: Videos with support for the src
 
     <!--Blockquotes-->
         <blockquote>: Block quotations
@@ -61,7 +61,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.2.8
+  flutter_quill_delta_from_html: ^1.3.0
 ```
 
 Then, import the package and use it in your Flutter application:

@@ -1,3 +1,11 @@
+## 1.3.0
+
+* Feat: added support for padding-left and padding-right
+* Feat: added support for image styles and align
+* Chore: removed support for `<iframe>`
+* Fix: code-block isn't parsed as a block
+* Fix: blockquote isn't parsed as a block
+
 ## 1.2.8
 
 * Fix: indent level is invalid for Delta format
