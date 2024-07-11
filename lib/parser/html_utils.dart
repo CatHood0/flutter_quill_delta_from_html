@@ -254,7 +254,7 @@ void processNode(
         newAttributes.remove('align');
         newAttributes.remove('direction');
         newAttributes.remove('indent');
-        delta.insert('\n', newAttributes);
+        delta.insert('\n');
       }
     }
 
