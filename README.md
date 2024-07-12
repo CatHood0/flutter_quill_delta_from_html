@@ -1,6 +1,6 @@
-# Flutter Quill Delta from HTML
+# Quill Delta from HTML
 
-This is a **Dart** package that converts **HTML** input into Quill **Delta** format, which is used in the `flutter_quill` package. This allows developers to easily convert `HTML` content to a format that can be displayed and edited using the **Quill rich text** editor in Flutter applications.
+This is a **Dart** package that converts **HTML** input into Quill **Delta** format, which is used in the [Quill Js](https://quilljs.com/) package.
 
 **This package** supports the conversion of a wide range of **HTML** tags and attributes into their corresponding **Delta** operations, ensuring that your **HTML** content is accurately represented in the **Quill editor**.
 
@@ -49,7 +49,9 @@ This is a **Dart** package that converts **HTML** input into Quill **Delta** for
         <p dir="rtl">: Paragraph direction 
 
     <!--Text attributes-->
-        <p style="padding: 10px;line-height: 1.0px;font-size: 12px;font-family: Times New Roman;color:#ffffff">: Inline attributes
+        <p style="padding: 10px;font-size: 12px;">: Inline attributes
+        <p style="font-family: Times New Roman;color:#ffffff;"> 
+
     
     <!--Custom Blocks-->
         <pullquote data-author="john">: Custom html
@@ -61,13 +63,13 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.3.0
+  quill_delta_from_html: ^1.3.1
 ```
 
 Then, import the package and use it in your Flutter application:
 
 ```dart
-import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
+import 'package:quill_delta_from_html/quill_delta_from_html.dart';
 
 void main() {
   String htmlContent = "<p>Hello, <b>world</b>!</p>";
@@ -86,7 +88,7 @@ void main() {
 First you need to define your own `CustomHtmlPart`
 
 ```dart
-import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
+import 'package:quill_delta_from_html/quill_delta_from_html.dart';
 import 'package:html/dom.dart' as dom;
 
 /// Custom block handler for <pullquote> elements.
@@ -136,7 +138,7 @@ class PullquoteBlock extends CustomHtmlPart {
 After, put your `PullquoteBlock` to `HtmlToDelta` using the param `customBlocks`
 
 ```dart
-import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
+import 'package:quill_delta_from_html/quill_delta_from_html.dart';
 
 void main() {
   // Example HTML snippet
@@ -199,6 +201,6 @@ abstract class HtmlOperations {
 
 ## Contributions
 
-If you find a bug or want to add a new feature, please open an issue or submit a pull request on the [GitHub repository](https://github.com/CatHood0/flutter_quill_delta_from_html).
+If you find a bug or want to add a new feature, please open an issue or submit a pull request on the [GitHub repository](https://github.com/CatHood0/quill_delta_from_html).
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/CatHood0/flutter_quill_delta_from_html/blob/Main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/CatHood0/quill_delta_from_html/blob/Main/LICENSE) file for details.

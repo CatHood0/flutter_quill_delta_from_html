@@ -1,8 +1,7 @@
 import 'package:dart_quill_delta/dart_quill_delta.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
-import 'package:flutter_quill_delta_from_html/parser/pullquote_block_example.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:quill_delta_from_html/parser/pullquote_block_example.dart';
+import 'package:quill_delta_from_html/quill_delta_from_html.dart';
 
 void main() {
   group('HtmlToDelta tests', () {

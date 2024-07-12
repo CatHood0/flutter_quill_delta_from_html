@@ -1,6 +1,6 @@
 import 'package:dart_quill_delta/dart_quill_delta.dart';
-import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:quill_delta_from_html/quill_delta_from_html.dart';
 
 /// Custom block handler for '<pullquote>' HTML elements.
 ///

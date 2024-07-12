@@ -1,3 +1,9 @@
+## 1.3.1
+
+* Feat: support for video and image as a child node of any tag 
+* Chore: moved `processNode` to it's own file called `node_processor` to make more easy read all logic into it
+* Fix: new lines contains empty attributes
+
 ## 1.3.0
 
 * Feat: added support for padding-left and padding-right
