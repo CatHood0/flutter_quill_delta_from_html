@@ -136,6 +136,22 @@ void main() {
       expect(delta, expectedDelta);
     });
 
+    test('Paragraph with a image child', () {
+      const html =
+          '<p>This is an image: <img align="center" style="width: 50px;height: 250px;margin: 5px;" src="https://example.com/image.png"/> example</p>';
+      final converter = HtmlToDelta();
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is an image: ')
+        ..insert({'image': 'https://example.com/image.png'},
+            {"style": "width:50px;height:250px;margin:5px;alignment:center"})
+        ..insert(' example')
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
+
     test('Ordered list', () {
       const html = '<ol><li>First item</li><li>Second item</li></ol>';
       final converter = HtmlToDelta();
@@ -333,5 +349,21 @@ void main() {
 
     expect(delta, expectedDelta);
     expect(deltaReversed, expectedDeltaRevered);
+  });
+
+  test('Paragraph with colors', () {
+    const html =
+        '<p><span style="color:#F06292FF">This is just pink </span><br/><br/><span style="color:#4DD0E1FF">This is just blue</span></p>';
+
+    final converter = HtmlToDelta();
+    final delta = converter.convert(html);
+
+    final expectedDelta = Delta()
+      ..insert('This is just pink ', {"color": "#F06292FF"})
+      ..insert('\n\n')
+      ..insert( "This is just blue", {"color": "#4DD0E1FF"})
+      ..insert('\n');
+
+    expect(delta, expectedDelta);
   });
 }

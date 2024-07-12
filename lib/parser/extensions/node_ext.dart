@@ -53,4 +53,12 @@ extension NodeExt on Element {
 
   ///Ensure to detect div html tags
   bool get isDivBlock => localName == 'div';
+
+  String getSafeAttribute(String attr) {
+    return attributes[attr] ?? '';
+  }
+
+  String? getAttribute(String attr) {
+    return attributes[attr];
+  }
 }

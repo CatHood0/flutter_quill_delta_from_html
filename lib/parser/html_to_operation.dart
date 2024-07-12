@@ -3,6 +3,7 @@ import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
 import 'package:flutter_quill_delta_from_html/parser/html_utils.dart';
 import 'package:html/dom.dart' as dom;
 import 'custom_html_part.dart';
+import 'package:flutter_quill_delta_from_html/parser/node_processor.dart';
 
 /// Operations for converting supported HTML elements to Delta operations.
 ///
@@ -22,7 +23,7 @@ abstract class HtmlOperations {
   /// A list of Delta operations corresponding to the HTML element.
   List<Operation> resolveCurrentElement(dom.Element element, [int indentLevel = 0]) {
     List<Operation> ops = [];
-    if (element.localName == null) return ops;
+    if (element.localName == null) return ops..add(Operation.insert(element.text));
     // Inlines
     //
     // the current element could be into a <li> then it's node can be
@@ -203,12 +204,12 @@ class DefaultHtmlToOperations extends HtmlOperations {
     if (element.attributes.containsKey('style') ||
         element.attributes.containsKey('align') ||
         element.attributes.containsKey('dir')) {
-      final String style = element.attributes['style'] ?? '';
-      final String? styles2 = element.attributes['align'];
-      final String? styles3 = element.attributes['dir'];
+      final String style = element.getSafeAttribute('style');
+      final String styles2 = element.getSafeAttribute('align');
+      final String styles3 = element.getSafeAttribute('dir');
       final styleAttributes = parseStyleAttribute(style);
-      final alignAttribute = parseStyleAttribute(styles2 ?? '');
-      final dirAttribute = parseStyleAttribute(styles3 ?? '');
+      final alignAttribute = parseStyleAttribute(styles2);
+      final dirAttribute = parseStyleAttribute(styles3);
       styleAttributes.addAll({...alignAttribute, ...dirAttribute});
       if (styleAttributes.containsKey('align') ||
           styleAttributes.containsKey('direction') ||
@@ -292,7 +293,7 @@ class DefaultHtmlToOperations extends HtmlOperations {
       ignoreBlockAttributesInsertion = false;
       int indent = indentLevel;
       if (checkbox == null) {
-        final dataChecked = item.attributes['data-checked'] ?? '';
+        final dataChecked = item.getSafeAttribute('data-checked');
         final blockAttrs = parseStyleAttribute(dataChecked);
         var isCheckList = item.localName == 'li' && blockAttrs.isNotEmpty && blockAttrs.containsKey('list');
         if (isCheckList) {
@@ -331,18 +332,14 @@ class DefaultHtmlToOperations extends HtmlOperations {
 
   @override
   List<Operation> imgToOp(dom.Element element) {
-    final String src = element.attributes['src'] ?? '';
-    final String styles = element.attributes['style'] ?? '';
-    final String align = element.attributes['align'] ?? '';
-    final attributes = parseImageStyleAttribute(styles);
-    if (align.isNotEmpty) {
-      attributes['alignment'] = align;
-    }
+    final String src = element.getSafeAttribute('src');
+    final String styles = element.getSafeAttribute('style');
+    final attributes = parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
     if (src.isNotEmpty) {
       return [
         Operation.insert(
           {'image': src},
-          styles.isEmpty && align.isEmpty
+          styles.isEmpty
               ? null
               : {
                   'style': attributes.entries.map((entry) => '${entry.key}:${entry.value}').toList().join(';'),
@@ -355,19 +352,12 @@ class DefaultHtmlToOperations extends HtmlOperations {
 
   @override
   List<Operation> videoToOp(dom.Element element) {
-    final String src = element.attributes['src'] ?? '';
-    final String sourceSrc =
-        element.nodes.where((node) => node.nodeType == dom.Node.ELEMENT_NODE).firstOrNull?.attributes['src'] ?? '';
-    if (src.isNotEmpty) {
+    final String? src = element.getAttribute('src');
+    final String? sourceSrc =
+        element.nodes.where((node) => node.nodeType == dom.Node.ELEMENT_NODE).firstOrNull?.attributes['src'];
+    if (src != null && src.isNotEmpty || sourceSrc != null && sourceSrc.isNotEmpty) {
       return [
-        Operation.insert('\n'),
-        Operation.insert({'video': src})
-      ];
-    }
-    if (sourceSrc.isNotEmpty) {
-      return [
-        Operation.insert('\n'),
-        Operation.insert({'video': sourceSrc})
+        Operation.insert({'video': src ?? sourceSrc})
       ];
     }
     return [];
