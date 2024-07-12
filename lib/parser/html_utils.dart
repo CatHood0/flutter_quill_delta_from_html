@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:quill_delta_from_html/quill_delta_from_html.dart';
+import 'package:flutter_quill_delta_from_html/parser/indent_parser.dart';
+import 'colors.dart';
+import 'font_size_parser.dart';
+import 'line_height_parser.dart';
 
 /// Checks if the given [tag] corresponds to an inline HTML element.
 ///

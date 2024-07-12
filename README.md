@@ -1,4 +1,4 @@
-# Quill Delta from HTML
+# Flutter Quill Delta from HTML
 
 This is a **Dart** package that converts **HTML** input into Quill **Delta** format, which is used in the [Quill Js](https://quilljs.com/) package.
 
@@ -49,9 +49,7 @@ This is a **Dart** package that converts **HTML** input into Quill **Delta** for
         <p dir="rtl">: Paragraph direction 
 
     <!--Text attributes-->
-        <p style="padding: 10px;font-size: 12px;">: Inline attributes
-        <p style="font-family: Times New Roman;color:#ffffff;"> 
-
+        <p style="padding: 10px;line-height: 1.0px;font-size: 12px;font-family: Times New Roman;color:#ffffff">: Inline attributes
     
     <!--Custom Blocks-->
         <pullquote data-author="john">: Custom html
@@ -63,13 +61,13 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  quill_delta_from_html: ^1.3.1
+  flutter_quill_delta_from_html: ^1.3.1
 ```
 
 Then, import the package and use it in your Flutter application:
 
 ```dart
-import 'package:quill_delta_from_html/quill_delta_from_html.dart';
+import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 
 void main() {
   String htmlContent = "<p>Hello, <b>world</b>!</p>";
@@ -88,7 +86,7 @@ void main() {
 First you need to define your own `CustomHtmlPart`
 
 ```dart
-import 'package:quill_delta_from_html/quill_delta_from_html.dart';
+import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 import 'package:html/dom.dart' as dom;
 
 /// Custom block handler for <pullquote> elements.
@@ -138,7 +136,7 @@ class PullquoteBlock extends CustomHtmlPart {
 After, put your `PullquoteBlock` to `HtmlToDelta` using the param `customBlocks`
 
 ```dart
-import 'package:quill_delta_from_html/quill_delta_from_html.dart';
+import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 
 void main() {
   // Example HTML snippet
@@ -201,6 +199,6 @@ abstract class HtmlOperations {
 
 ## Contributions
 
-If you find a bug or want to add a new feature, please open an issue or submit a pull request on the [GitHub repository](https://github.com/CatHood0/quill_delta_from_html).
+If you find a bug or want to add a new feature, please open an issue or submit a pull request on the [GitHub repository](https://github.com/CatHood0/flutter_quill_delta_from_html).
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/CatHood0/quill_delta_from_html/blob/Main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/CatHood0/flutter_quill_delta_from_html/blob/Main/LICENSE) file for details.
