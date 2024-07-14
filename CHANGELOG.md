@@ -1,3 +1,10 @@
+## 1.3.11
+
+* Fix: package use flutter dependency
+* Fix: removed sdk flutter ref from pubspec.yaml since package doesn't depend on flutter
+* Fix: repository and issue_tracker wrong url 
+* Chore: removed unnecessary prints on html_utils
+
 ## 1.3.1
 
 * Feat: support for video and image as a child node of any tag 
