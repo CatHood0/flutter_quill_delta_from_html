@@ -15,7 +15,8 @@
 /// Returns the corresponding indentation level as an integer.
 int parseToIndent(String value) {
   // Extract numeric part from the value and parse it to double
-  double indentValue = double.tryParse(value.replaceAll(RegExp(r'[^\d.]'), '')) ?? 0;
+  double indentValue =
+      double.tryParse(value.replaceAll(RegExp(r'[^\d.]'), '')) ?? 0;
 
   // Extract the unit part from the value
   String unit = value.replaceAll(RegExp(r'[\d.]'), '').trim();

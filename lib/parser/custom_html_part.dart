@@ -43,5 +43,6 @@ abstract class CustomHtmlPart {
   ///   }
   /// }
   /// ```
-  List<Operation> convert(dom.Element element, {Map<String, dynamic>? currentAttributes});
+  List<Operation> convert(dom.Element element,
+      {Map<String, dynamic>? currentAttributes});
 }

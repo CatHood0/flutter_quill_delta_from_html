@@ -49,7 +49,8 @@ double parseSizeToPx(
   final unit = value.replaceAll(RegExp(r'[0-9.]'), '');
 
   // Extract the numeric part of the value string.
-  final number = double.tryParse(value.replaceAll(RegExp(r'[a-z%]'), '')) ?? 0.0;
+  final number =
+      double.tryParse(value.replaceAll(RegExp(r'[a-z%]'), '')) ?? 0.0;
 
   // Convert the numeric value to pixels based on the unit.
   switch (unit) {

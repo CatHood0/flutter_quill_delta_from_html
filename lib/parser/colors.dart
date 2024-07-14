@@ -57,7 +57,6 @@ String colorToHex(String color) {
   }
 }
 
-
 /// Parses an RGB color string to a valid hexadecimal color string.
 ///
 /// Converts the RGB color format string [rgb] (e.g., 'rgb(255, 0, 0)') to its hexadecimal representation.
@@ -204,7 +203,6 @@ List<int> _hslToRgb(double h, double s, double l) {
 
   return [red, green, blue];
 }
-
 
 /// Converts RGB (Red, Green, Blue) values to a hexadecimal color string.
 ///

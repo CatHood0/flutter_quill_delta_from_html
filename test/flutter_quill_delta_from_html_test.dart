@@ -6,7 +6,8 @@ import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart
 void main() {
   group('HtmlToDelta tests', () {
     test('Header with styles', () {
-      const html = '<h3 style="text-align:right">Header example 3 <span><i>with</i> a spanned italic text</span></h3>';
+      const html =
+          '<h3 style="text-align:right">Header example 3 <span><i>with</i> a spanned italic text</span></h3>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -21,7 +22,8 @@ void main() {
     });
 
     test('Paragraph with link', () {
-      const html = '<p>This is a <a href="https://example.com">link</a> to example.com</p>';
+      const html =
+          '<p>This is a <a href="https://example.com">link</a> to example.com</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -48,10 +50,14 @@ void main() {
     });
 
     test('Paragraph with different font-size unit type', () {
-      const htmlSmall = '<p style="font-size: 0.75em">This is a paragraph example</p>';
-      const htmlHuge = '<p style="font-size: 2.5em">This is a paragraph example 2</p>';
-      const htmlLarge = '<p style="font-size: 1.5em">This is a paragraph example 3</p>';
-      const htmlCustomSize = '<p style="font-size: 12pt">This is a paragraph example 4</p>';
+      const htmlSmall =
+          '<p style="font-size: 0.75em">This is a paragraph example</p>';
+      const htmlHuge =
+          '<p style="font-size: 2.5em">This is a paragraph example 2</p>';
+      const htmlLarge =
+          '<p style="font-size: 1.5em">This is a paragraph example 3</p>';
+      const htmlCustomSize =
+          '<p style="font-size: 12pt">This is a paragraph example 4</p>';
       final converter = HtmlToDelta();
       final deltaSmall = converter.convert(htmlSmall);
       final deltaLarge = converter.convert(htmlLarge);
@@ -100,7 +106,8 @@ void main() {
       final delta = converter.convert(html);
 
       final expectedDelta = Delta()
-        ..insert('This is a paragraph example', {"line-height": 1.5, "size": "15", "font": "Tinos"})
+        ..insert('This is a paragraph example',
+            {"line-height": 1.5, "size": "15", "font": "Tinos"})
         ..insert('\n', {"align": "center", "direction": "rtl"})
         ..insert('\n');
 
@@ -108,7 +115,8 @@ void main() {
     });
 
     test('Paragraph with spanned red text', () {
-      const html = '<p>This is a <span style="background-color:rgb(255,255,255)">red text</span></p>';
+      const html =
+          '<p>This is a <span style="background-color:rgb(255,255,255)">red text</span></p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -121,7 +129,8 @@ void main() {
     });
 
     test('Paragraph with subscript and superscript', () {
-      const html = '<p>This is a paragraph that contains <sub>subscript</sub> and <sup>superscript</sup></p>';
+      const html =
+          '<p>This is a paragraph that contains <sub>subscript</sub> and <sup>superscript</sup></p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -191,7 +200,8 @@ void main() {
     });
 
     test('Checklist', () {
-      const html = '<ul><li data-checked="true">First item</li><li data-checked="false">Second item</li></ul>';
+      const html =
+          '<ul><li data-checked="true">First item</li><li data-checked="false">Second item</li></ul>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -206,7 +216,8 @@ void main() {
     });
 
     test('Image', () {
-      const html = '<p>This is an image:</p><img src="https://example.com/image.png" />';
+      const html =
+          '<p>This is an image:</p><img src="https://example.com/image.png" />';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -260,7 +271,8 @@ void main() {
     });
 
     test('Text with different styles', () {
-      const html = '<p>This is <strong>bold</strong>, <em>italic</em>, and <u>underlined</u> text.</p>';
+      const html =
+          '<p>This is <strong>bold</strong>, <em>italic</em>, and <u>underlined</u> text.</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -278,7 +290,8 @@ void main() {
     });
 
     test('Combined styles and link', () {
-      const html = '<p>This is a <strong><a href="https://example.com">bold link</a></strong> with text.</p>';
+      const html =
+          '<p>This is a <strong><a href="https://example.com">bold link</a></strong> with text.</p>';
       final converter = HtmlToDelta();
       final delta = converter.convert(html);
 
@@ -292,7 +305,9 @@ void main() {
     });
   });
 
-  test('should convert custom <pullquote> block to Delta with custom attributes', () {
+  test(
+      'should convert custom <pullquote> block to Delta with custom attributes',
+      () {
     const htmlText = '''
         <html>
           <body>
@@ -310,7 +325,8 @@ void main() {
 
     final expectedDelta = Delta()
       ..insert('Regular paragraph before the custom block')
-      ..insert('Pullquote: "This is a custom pullquote" by John Doe', {'italic': true})
+      ..insert('Pullquote: "This is a custom pullquote" by John Doe',
+          {'italic': true})
       ..insert('\n')
       ..insert('Regular paragraph after the custom block\n');
 
@@ -360,7 +376,7 @@ void main() {
     final expectedDelta = Delta()
       ..insert('This is just pink ', {"color": "#F06292FF"})
       ..insert('\n\n')
-      ..insert( "This is just blue", {"color": "#4DD0E1FF"})
+      ..insert("This is just blue", {"color": "#4DD0E1FF"})
       ..insert('\n');
 
     expect(delta, expectedDelta);

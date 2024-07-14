@@ -36,9 +36,11 @@ class PullquoteBlock extends CustomHtmlPart {
   /// final operations = PullquoteBlock().convert(element);
   /// ```
   @override
-  List<Operation> convert(dom.Element element, {Map<String, dynamic>? currentAttributes}) {
+  List<Operation> convert(dom.Element element,
+      {Map<String, dynamic>? currentAttributes}) {
     final Delta delta = Delta();
-    final Map<String, dynamic> attributes = currentAttributes != null ? Map.from(currentAttributes) : {};
+    final Map<String, dynamic> attributes =
+        currentAttributes != null ? Map.from(currentAttributes) : {};
 
     final author = element.attributes['data-author'];
     final style = element.attributes['data-style'];

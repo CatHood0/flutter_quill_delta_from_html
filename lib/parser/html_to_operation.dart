@@ -21,9 +21,11 @@ abstract class HtmlOperations {
   ///
   /// Returns:
   /// A list of Delta operations corresponding to the HTML element.
-  List<Operation> resolveCurrentElement(dom.Element element, [int indentLevel = 0]) {
+  List<Operation> resolveCurrentElement(dom.Element element,
+      [int indentLevel = 0]) {
     List<Operation> ops = [];
-    if (element.localName == null) return ops..add(Operation.insert(element.text));
+    if (element.localName == null)
+      return ops..add(Operation.insert(element.text));
     // Inlines
     //
     // the current element could be into a <li> then it's node can be
@@ -96,7 +98,8 @@ abstract class HtmlOperations {
   /// Parameters:
   /// - [customBlocks]: List of custom HTML parts to add.
   /// - [overrideCurrentBlocks]: Flag to override existing custom blocks.
-  void setCustomBlocks(List<CustomHtmlPart> customBlocks, {bool overrideCurrentBlocks = false}) {
+  void setCustomBlocks(List<CustomHtmlPart> customBlocks,
+      {bool overrideCurrentBlocks = false}) {
     if (this.customBlocks != null && !overrideCurrentBlocks) {
       this.customBlocks!.addAll(customBlocks);
       return;
@@ -120,7 +123,9 @@ class DefaultHtmlToOperations extends HtmlOperations {
     Map<String, dynamic> inlineAttributes = {};
     Map<String, dynamic> blockAttributes = {};
     // Process the style attribute
-    if (attributes.containsKey('style') || attributes.containsKey('align') || attributes.containsKey('dir')) {
+    if (attributes.containsKey('style') ||
+        attributes.containsKey('align') ||
+        attributes.containsKey('dir')) {
       final String style = attributes['style'] ?? '';
       final String? styles2 = attributes['align'];
       final String? styles3 = attributes['dir'];
@@ -144,7 +149,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta, addSpanAttrs: true, customBlocks: customBlocks);
+      processNode(node, inlineAttributes, delta,
+          addSpanAttrs: true, customBlocks: customBlocks);
     }
     if (blockAttributes.isNotEmpty) {
       blockAttributes.removeWhere((key, value) => value == null);
@@ -172,7 +178,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta, addSpanAttrs: false, customBlocks: customBlocks);
+      processNode(node, inlineAttributes, delta,
+          addSpanAttrs: false, customBlocks: customBlocks);
     }
 
     return delta.toList();
@@ -271,7 +278,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
     final Delta delta = Delta();
     final tagName = element.localName ?? 'ul';
     final Map<String, dynamic> attributes = {};
-    final List<dom.Element> items = element.children.where((child) => child.localName == 'li').toList();
+    final List<dom.Element> items =
+        element.children.where((child) => child.localName == 'li').toList();
 
     if (tagName == 'ul') {
       attributes['list'] = 'bullet';
@@ -295,7 +303,9 @@ class DefaultHtmlToOperations extends HtmlOperations {
       if (checkbox == null) {
         final dataChecked = item.getSafeAttribute('data-checked');
         final blockAttrs = parseStyleAttribute(dataChecked);
-        var isCheckList = item.localName == 'li' && blockAttrs.isNotEmpty && blockAttrs.containsKey('list');
+        var isCheckList = item.localName == 'li' &&
+            blockAttrs.isNotEmpty &&
+            blockAttrs.containsKey('list');
         if (isCheckList) {
           attributes['list'] = blockAttrs['list'];
         }
@@ -334,7 +344,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
   List<Operation> imgToOp(dom.Element element) {
     final String src = element.getSafeAttribute('src');
     final String styles = element.getSafeAttribute('style');
-    final attributes = parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
+    final attributes =
+        parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
     if (src.isNotEmpty) {
       return [
         Operation.insert(
@@ -342,7 +353,10 @@ class DefaultHtmlToOperations extends HtmlOperations {
           styles.isEmpty
               ? null
               : {
-                  'style': attributes.entries.map((entry) => '${entry.key}:${entry.value}').toList().join(';'),
+                  'style': attributes.entries
+                      .map((entry) => '${entry.key}:${entry.value}')
+                      .toList()
+                      .join(';'),
                 },
         )
       ];
@@ -353,9 +367,12 @@ class DefaultHtmlToOperations extends HtmlOperations {
   @override
   List<Operation> videoToOp(dom.Element element) {
     final String? src = element.getAttribute('src');
-    final String? sourceSrc =
-        element.nodes.where((node) => node.nodeType == dom.Node.ELEMENT_NODE).firstOrNull?.attributes['src'];
-    if (src != null && src.isNotEmpty || sourceSrc != null && sourceSrc.isNotEmpty) {
+    final String? sourceSrc = element.nodes
+        .where((node) => node.nodeType == dom.Node.ELEMENT_NODE)
+        .firstOrNull
+        ?.attributes['src'];
+    if (src != null && src.isNotEmpty ||
+        sourceSrc != null && sourceSrc.isNotEmpty) {
       return [
         Operation.insert({'video': src ?? sourceSrc})
       ];

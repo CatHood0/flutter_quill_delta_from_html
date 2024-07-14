@@ -45,7 +45,8 @@ void processNode(
     if (customBlocks != null && customBlocks.isNotEmpty) {
       for (var customBlock in customBlocks) {
         if (customBlock.matches(node)) {
-          final operations = customBlock.convert(node, currentAttributes: newAttributes);
+          final operations =
+              customBlock.convert(node, currentAttributes: newAttributes);
           operations.forEach((Operation op) {
             delta.insert(op.data, op.attributes);
           });
@@ -55,7 +56,8 @@ void processNode(
     } else {
       // Handle <span> tags
       if (node.isSpan) {
-        final spanAttributes = parseStyleAttribute(node.getSafeAttribute('style'));
+        final spanAttributes =
+            parseStyleAttribute(node.getSafeAttribute('style'));
         if (addSpanAttrs) {
           newAttributes.remove('align');
           newAttributes.remove('direction');
@@ -76,7 +78,10 @@ void processNode(
             styles.isEmpty
                 ? null
                 : {
-                    'style': attributes.entries.map((entry) => '${entry.key}:${entry.value}').toList().join(';'),
+                    'style': attributes.entries
+                        .map((entry) => '${entry.key}:${entry.value}')
+                        .toList()
+                        .join(';'),
                   },
           );
         }
@@ -85,9 +90,12 @@ void processNode(
       // Handle <video> tags
       if (node.isVideo) {
         final String? src = node.getAttribute('src');
-        final String? sourceSrc =
-            node.nodes.where((node) => node.nodeType == dom.Node.ELEMENT_NODE).firstOrNull?.attributes['src'];
-        if (src != null && src.isNotEmpty || sourceSrc != null && sourceSrc.isNotEmpty) {
+        final String? sourceSrc = node.nodes
+            .where((node) => node.nodeType == dom.Node.ELEMENT_NODE)
+            .firstOrNull
+            ?.attributes['src'];
+        if (src != null && src.isNotEmpty ||
+            sourceSrc != null && sourceSrc.isNotEmpty) {
           delta.insert({'video': src ?? sourceSrc});
         }
       }
