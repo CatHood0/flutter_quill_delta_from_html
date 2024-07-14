@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_quill_delta_from_html/parser/indent_parser.dart';
 import 'colors.dart';
 import 'font_size_parser.dart';
@@ -87,9 +86,8 @@ Map<String, dynamic> parseStyleAttribute(String style) {
                 fontSize = size.floorToDouble();
                 sizeToPass = '${size.floor()}';
               }
-            } on UnsupportedError catch (e) {
-              debugPrint(e.message);
-              debugPrintStack(stackTrace: e.stackTrace);
+            } on UnsupportedError {
+              //ignore error
               break;
             }
           }
