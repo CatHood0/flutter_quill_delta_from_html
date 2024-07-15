@@ -63,15 +63,12 @@ class HtmlToDelta {
     final dom.Element? $html = $document.documentElement;
 
     // Determine nodes to process: <body>, <html>, or document nodes if neither is present
-    final List<dom.Node> nodesToProcess =
-        $body?.nodes ?? $html?.nodes ?? $document.nodes;
+    final List<dom.Node> nodesToProcess = $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (var node in nodesToProcess) {
       //first just verify if the customBlocks aren't empty and then store on them to
       //validate if one of them make match with the current Node
-      if (customBlocks != null &&
-          customBlocks!.isNotEmpty &&
-          node is dom.Element) {
+      if (customBlocks != null && customBlocks!.isNotEmpty && node is dom.Element) {
         for (var customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
             final operations = customBlock.convert(node);
@@ -90,7 +87,12 @@ class HtmlToDelta {
       }
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
-    delta.insert('\n');
+    final lastOpdata = delta.last;
+    final bool lastDataIsNotNewLine = lastOpdata.data.toString() != '\n';
+    final bool hasAttributes = lastOpdata.attributes != null;
+    if (lastDataIsNotNewLine && hasAttributes || lastDataIsNotNewLine || !lastDataIsNotNewLine && hasAttributes) {
+      delta.insert('\n');
+    }
     return delta;
   }
 
@@ -117,13 +119,10 @@ class HtmlToDelta {
     final dom.Element? $html = $document.documentElement;
 
     // Determine nodes to process: <body>, <html>, or document nodes if neither is present
-    final List<dom.Node> nodesToProcess =
-        $body?.nodes ?? $html?.nodes ?? $document.nodes;
+    final List<dom.Node> nodesToProcess = $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (var node in nodesToProcess) {
-      if (customBlocks != null &&
-          customBlocks!.isNotEmpty &&
-          node is dom.Element) {
+      if (customBlocks != null && customBlocks!.isNotEmpty && node is dom.Element) {
         for (var customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
             final operations = customBlock.convert(node);
@@ -142,7 +141,12 @@ class HtmlToDelta {
       }
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
-    delta.insert('\n');
+    final lastOpdata = delta.last;
+    final bool lastDataIsNotNewLine = lastOpdata.data.toString() != '\n';
+    final bool hasAttributes = lastOpdata.attributes != null;
+    if (lastDataIsNotNewLine && hasAttributes || lastDataIsNotNewLine || !lastDataIsNotNewLine && hasAttributes) {
+      delta.insert('\n');
+    }
     return delta;
   }
 
