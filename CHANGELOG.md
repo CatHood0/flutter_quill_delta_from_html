@@ -1,3 +1,7 @@
+## 1.3.13
+
+* Chore: updated dependencies
+
 ## 1.3.12
 
 * Fix: always add a new line without checking the last operation
