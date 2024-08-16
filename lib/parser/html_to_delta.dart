@@ -28,6 +28,9 @@ class HtmlToDelta {
   /// Converts HTML tags to Delta operations based on defined rules.
   late HtmlOperations htmlToOp;
 
+  /// Optionally trims converted text
+  final bool trimText;
+
   /// Creates a new instance of HtmlToDelta.
   ///
   /// [htmlToOperations] defines how common HTML tags are converted to Delta operations.
@@ -35,6 +38,7 @@ class HtmlToDelta {
   HtmlToDelta({
     HtmlOperations? htmlToOperations,
     this.customBlocks,
+    this.trimText = true,
   }) {
     htmlToOp = htmlToOperations ?? DefaultHtmlToOperations();
     //this part ensure to set the customBlocks passed at the constructor
@@ -170,7 +174,7 @@ class HtmlToDelta {
   List<Operation> nodeToOperation(dom.Node node, HtmlOperations htmlToOp) {
     List<Operation> operations = [];
     if (node is dom.Text) {
-      operations.add(Operation.insert(node.text.trim()));
+      operations.add(Operation.insert(trimText ? node.text.trim() : node.text));
     }
     if (node is dom.Element) {
       List<Operation> ops = htmlToOp.resolveCurrentElement(node);
