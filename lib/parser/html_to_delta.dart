@@ -28,7 +28,35 @@ class HtmlToDelta {
   /// Converts HTML tags to Delta operations based on defined rules.
   late HtmlOperations htmlToOp;
 
-  /// Optionally trims converted text
+  /// ## Optionally trims converted text
+  ///
+  /// This could cause some **unexpected** behaviors since we cannot
+  /// recognize which part must be remove, like the **before append any html tag**
+  ///
+  /// ### Example
+  ///
+  /// Assume that you have a HTML like this:
+  ///
+  ///```html
+  /// <body>
+  ///   <p>This is a paragraph</p>
+  ///   <p>This is another paragraph</p>
+  /// </body>
+  ///```
+  ///
+  /// If [trimText] is false the leading spaces wont be removed 
+  /// and return a Delta with unexpected spaces like: 
+  ///
+  ///```dart
+  /// [
+  ///   {"insert":"  This is a paragraph\n"},
+  ///   {"insert":"  This is another paragraph\n"}
+  /// ]
+  ///```
+  ///
+  /// It's highly recommended that if you have a html on multiple lines
+  /// then remove all new lines to make more simple to the parser works
+  /// as expect. HtmlToDelta works better with a single line html code
   final bool trimText;
 
   /// Creates a new instance of HtmlToDelta.
