@@ -44,8 +44,8 @@ class HtmlToDelta {
   /// </body>
   ///```
   ///
-  /// If [trimText] is false the leading spaces wont be removed 
-  /// and return a Delta with unexpected spaces like: 
+  /// If [trimText] is false the leading spaces wont be removed
+  /// and return a Delta with unexpected spaces like:
   ///
   ///```dart
   /// [
@@ -55,9 +55,20 @@ class HtmlToDelta {
   ///```
   ///
   /// It's highly recommended that if you have a html on multiple lines
-  /// then remove all new lines to make more simple to the parser works
-  /// as expect. HtmlToDelta works better with a single line html code
+  /// then remove all new lines or set replaceNormalNewLinesToBr to true
+  /// to replace new lines to `<br>` tags
+  /// to make more simple to the parser works as we expect.
+  ///
+  /// HtmlToDelta works better with a single line html code
   final bool trimText;
+  /// Replace all new lines (\n) to `<br>`
+  ///
+  /// You will need to ensure of your html content **has not**
+  /// wrapped into a `<html>` or `<body>` tags
+  /// because this will replace all ones, without
+  /// ensure if the tag to the left of the new line
+  /// is a common tags (`<p>`,`<li>`,`<h1>`,etc) or a body tags
+  final bool replaceNormalNewLinesToBr;
 
   /// Creates a new instance of HtmlToDelta.
   ///
@@ -67,6 +78,7 @@ class HtmlToDelta {
     HtmlOperations? htmlToOperations,
     this.customBlocks,
     this.trimText = true,
+    this.replaceNormalNewLinesToBr = false,
   }) {
     htmlToOp = htmlToOperations ?? DefaultHtmlToOperations();
     //this part ensure to set the customBlocks passed at the constructor
@@ -91,7 +103,9 @@ class HtmlToDelta {
   /// ```
   Delta convert(String htmlText) {
     final Delta delta = Delta();
-    final dom.Document $document = dparser.parse(htmlText);
+    final dom.Document $document = dparser.parse(
+      replaceNormalNewLinesToBr ? htmlText.replaceAll('\n', '<br>') : htmlText,
+    );
     final dom.Element? $body = $document.body;
     final dom.Element? $html = $document.documentElement;
 

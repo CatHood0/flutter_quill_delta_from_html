@@ -61,7 +61,7 @@ Add the dependency to your pubspec.yaml:
 
 ```yaml
 dependencies:
-  flutter_quill_delta_from_html: ^1.3.13
+  flutter_quill_delta_from_html: ^1.4.0
 ```
 
 Then, import the package and use it in your Flutter application:
@@ -176,12 +176,12 @@ To utilize `HtmlOperations`, extend this class and implement the methods necessa
 
 ```dart
 abstract class HtmlOperations {
-  ///custom blocks are passed internally by HtmlToDelta
+  /// custom blocks are passed internally by HtmlToDelta
   List<CustomHtmlPart>? customBlocks;
 
-  //You don't need to override this method 
-  //as it simply calls the other methods 
-  //to detect the type of HTML tag
+  // You don't need to override this method 
+  // since it just call the other methods 
+  // when detect the type of HTML tag
   List<Operation> resolveCurrentElement(dom.Element element, [int indentLevel = 0]);
 
   List<Operation> brToOp(dom.Element element);

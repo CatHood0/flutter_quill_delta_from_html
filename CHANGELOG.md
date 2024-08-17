@@ -1,3 +1,11 @@
+## 1.4.0
+
+* feat: made text trimming optional by @raimkulovr in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/7
+* feat: ability to replace new lines to `<br>`
+
+## New Contributors
+* @raimkulovr made their first contribution in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/7
+
 ## 1.3.13
 
 * Chore: updated dependencies
