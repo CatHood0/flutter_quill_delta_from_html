@@ -24,8 +24,9 @@ abstract class HtmlOperations {
   List<Operation> resolveCurrentElement(dom.Element element,
       [int indentLevel = 0]) {
     List<Operation> ops = [];
-    if (element.localName == null)
+    if (element.localName == null) {
       return ops..add(Operation.insert(element.text));
+    }
     // Inlines
     //
     // the current element could be into a <li> then it's node can be

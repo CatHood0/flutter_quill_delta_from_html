@@ -52,11 +52,15 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           break;
         case 'color':
           final color = validateAndGetColor(value);
-          attributes['color'] = color;
+          if (color != null) {
+            attributes['color'] = color;
+          }
           break;
         case 'background-color':
           final color = validateAndGetColor(value);
-          attributes['background'] = color;
+          if (color != null) {
+            attributes['background'] = color;
+          }
           break;
         case 'padding-left' || 'padding-right':
           final indentation = parseToIndent(value);

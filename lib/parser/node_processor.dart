@@ -27,6 +27,7 @@ void processNode(
   Delta delta, {
   bool addSpanAttrs = false,
   List<CustomHtmlPart>? customBlocks,
+  List<String>? removeTheseAttributesFromSpan,
 }) {
   if (node is dom.Text) {
     delta.insert(node.text, attributes.isEmpty ? null : attributes);
@@ -62,7 +63,13 @@ void processNode(
           newAttributes.remove('align');
           newAttributes.remove('direction');
           newAttributes.remove('indent');
-          newAttributes.addAll(spanAttributes);
+          if (removeTheseAttributesFromSpan != null &&
+              removeTheseAttributesFromSpan.isNotEmpty) {
+            for (final attr in removeTheseAttributesFromSpan) {
+              newAttributes.remove(attr);
+            }
+          }
+          newAttributes = {...spanAttributes, ...newAttributes};
         }
       }
 

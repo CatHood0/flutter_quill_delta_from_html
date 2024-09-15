@@ -16,7 +16,7 @@
 /// print(validateAndGetColor('rgb(255, 0, 0)')); // Output: #ff0000
 /// print(validateAndGetColor('hsl(0, 100%, 50%)')); // Output: #ff0000
 /// ```
-String validateAndGetColor(String colorString) {
+String? validateAndGetColor(String colorString) {
   //verify if the color already is a hex
   if (colorString.startsWith('#')) return colorString;
   return colorToHex(colorString);
@@ -42,7 +42,7 @@ String validateAndGetColor(String colorString) {
 /// print(colorToHex('rgb(255, 0, 0)')); // Output: #ff0000
 /// print(colorToHex('hsla(0, 100%, 50%, 0.5)')); // Output: #ff0000
 /// ```
-String colorToHex(String color) {
+String? colorToHex(String color) {
   // Detectar el tipo de color y llamar a la función correspondiente
   if (color.startsWith('rgb(')) {
     return rgbToHex(color);
@@ -53,7 +53,7 @@ String colorToHex(String color) {
   } else if (color.startsWith('hsla(')) {
     return hslaToHex(color);
   } else {
-    throw ArgumentError('color format not supported: $color');
+    return null;
   }
 }
 
