@@ -28,6 +28,22 @@ class HtmlToDelta {
   /// Converts HTML tags to Delta operations based on defined rules.
   late HtmlOperations htmlToOp;
 
+  /// This is a list that must contains only the tag name
+  /// of the all HTML Nodes (`<p>`, `<div>` or `<h1>`) that will be
+  /// ignored and inserted as plain text
+  ///
+  /// # Example
+  /// Assume that you want to ignore just HTML containers. Then just need
+  /// to do something like this:
+  /// __
+  /// ```dart
+  /// final List containerBlackList = ['div', 'section', 'article'];
+  ///
+  /// final converter = HtmlToDelta(blackNodesList: containerBlackList);
+  /// final delta = converter.convert(<your_html>);
+  /// ```
+  final List<String> blackNodesList;
+
   /// ## Optionally trims converted text
   ///
   /// This could cause some **unexpected** behaviors since we cannot
@@ -77,6 +93,7 @@ class HtmlToDelta {
   /// [customBlocks] allows adding custom rules for handling specific HTML tags.
   HtmlToDelta({
     HtmlOperations? htmlToOperations,
+    this.blackNodesList = const [],
     this.customBlocks,
     this.trimText = true,
     this.replaceNormalNewLinesToBr = false,
@@ -230,6 +247,11 @@ class HtmlToDelta {
       operations.add(Operation.insert(trimText ? node.text.trim() : node.text));
     }
     if (node is dom.Element) {
+      if (blackNodesList.contains(node.localName)) {
+        operations
+            .add(Operation.insert(trimText ? node.text.trim() : node.text));
+        return operations;
+      }
       List<Operation> ops = htmlToOp.resolveCurrentElement(node);
       operations.addAll(ops);
     }
