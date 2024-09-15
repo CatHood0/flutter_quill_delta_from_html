@@ -1,3 +1,9 @@
+## 1.4.1
+
+* Fix: header elements with children spans ignore the attributes that can be into its own spans
+* Fix: removed unnecessary exception when unsupported color is detected 
+* Feat: added `blackNodesList` into `HtmlToDelta` class to ignore certain nodes
+
 ## 1.4.0
 
 * feat: made text trimming optional by @raimkulovr in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/7
