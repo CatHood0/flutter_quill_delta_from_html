@@ -1,4 +1,5 @@
-library flutter_quill_delta_from_html;
+/// Convert HTML content to [Quill Delta](https://quilljs.com/docs/delta) format.
+library;
 
 export 'package:flutter_quill_delta_from_html/parser/font_size_parser.dart';
 export 'package:flutter_quill_delta_from_html/parser/indent_parser.dart';
