@@ -19,7 +19,11 @@
 String? validateAndGetColor(String colorString) {
   //verify if the color already is a hex
   if (colorString.startsWith('#')) return colorString;
-  return colorToHex(colorString);
+  try {
+    return colorToHex(colorString);
+  } catch (_) {
+    return null;
+  }
 }
 
 /// Decides the color format type and converts it to hexadecimal format.
