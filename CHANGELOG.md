@@ -1,3 +1,14 @@
+## 1.4.2
+
+* chore(deps): improve dependencies constraints for compatibility by @EchoEllet in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/11
+* Added exception handling to color parsing by @mtallenca in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/12
+
+## New Contributors
+* @EchoEllet made their first contribution in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/11
+* @mtallenca made their first contribution in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/12
+
+**Full Changelog**: https://github.com/CatHood0/flutter_quill_delta_from_html/compare/V-1.4.1...V-1.4.2
+
 ## 1.4.1
 
 * Fix: header elements with children spans ignore the attributes that can be into its own spans
