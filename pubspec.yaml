@@ -6,17 +6,13 @@ repository: https://github.com/CatHood0/flutter_quill_delta_from_html
 issue_tracker: https://github.com/CatHood0/flutter_quill_delta_from_html/issues
 
 environment:
-  sdk: ">=3.4.3 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  dart_quill_delta: ^10.6.0
-  html: ^0.15.4
+  dart_quill_delta: ^10.0.0
+  html: ^0.15.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
-
-flutter:
-  uses-material-design: true
+  flutter_lints: ^5.0.0
