@@ -230,5 +230,5 @@ String _toHex(int r, int g, int b, int a) {
   String hexG = g.toRadixString(16).padLeft(2, '0');
   String hexB = b.toRadixString(16).padLeft(2, '0');
   String hexA = a.toRadixString(16).padLeft(2, '0');
-  return '#$hexR$hexG$hexB$hexA';
+  return '#$hexA$hexR$hexG$hexB'.toUpperCase();
 }
