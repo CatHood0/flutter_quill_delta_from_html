@@ -1,3 +1,10 @@
+## 1.4.3
+
+* Textcolor on paste of clipboard text showing wrong color by @SC8885 in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/13
+
+## New Contributors
+* @SC8885 made their first contribution in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/13
+
 ## 1.4.2
 
 * chore(deps): improve dependencies constraints for compatibility by @EchoEllet in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/11
