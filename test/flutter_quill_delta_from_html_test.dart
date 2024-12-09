@@ -15,8 +15,8 @@ void main() {
 
       final expectedDelta = Delta()
         ..insert('Header example 3 ')
-        ..insert('with', {'color': '#ffffffff', 'italic': true})
-        ..insert(' a spanned italic text', {'color': '#ffffffff'})
+        ..insert('with', {'color': '#FFFFFFFF', 'italic': true})
+        ..insert(' a spanned italic text', {'color': '#FFFFFFFF'})
         ..insert('\n', {'align': 'right', 'header': 3})
         ..insert('\n');
 
@@ -124,7 +124,7 @@ void main() {
 
       final expectedDelta = Delta()
         ..insert('This is a ')
-        ..insert('red text', {'background': '#ffffffff'})
+        ..insert('red text', {'background': '#FFFFFFFF'})
         ..insert('\n');
 
       expect(delta, expectedDelta);
