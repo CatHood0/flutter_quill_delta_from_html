@@ -28,6 +28,17 @@ extension NodeExt on Element {
 
   ///Ensure to detect span html tags
   bool get isSpan => localName == 'span';
+  bool get isBlock =>
+      isList || isHeader || isDivBlock || isBlockquote || isCodeBlock;
+  bool get isInline =>
+      isSpan ||
+      isParagraph ||
+      isLink ||
+      isStrong ||
+      isStrike ||
+      isItalic ||
+      isUnderline ||
+      isSubscript;
 
   ///Ensure to detect h(1-6) html tags
   bool get isHeader =>

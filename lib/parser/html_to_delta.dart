@@ -1,6 +1,7 @@
 import 'package:dart_quill_delta/dart_quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart';
 import 'package:flutter_quill_delta_from_html/parser/default_html_to_ops.dart';
+import 'package:flutter_quill_delta_from_html/parser/extensions/string_ext.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as dparser;
 
@@ -44,38 +45,8 @@ class HtmlToDelta {
   /// ```
   final List<String> blackNodesList;
 
-  /// ## Optionally trims converted text
-  ///
-  /// This could cause some **unexpected** behaviors since we cannot
-  /// recognize which part must be remove, like the **before append any html tag**
-  ///
-  /// ### Example
-  ///
-  /// Assume that you have a HTML like this:
-  ///
-  ///```html
-  /// <body>
-  ///   <p>This is a paragraph</p>
-  ///   <p>This is another paragraph</p>
-  /// </body>
-  ///```
-  ///
-  /// If [trimText] is false the leading spaces wont be removed
-  /// and return a Delta with unexpected spaces like:
-  ///
-  ///```dart
-  /// [
-  ///   {"insert":"  This is a paragraph\n"},
-  ///   {"insert":"  This is another paragraph\n"}
-  /// ]
-  ///```
-  ///
-  /// It's highly recommended that if you have a html on multiple lines
-  /// then remove all new lines or set replaceNormalNewLinesToBr to true
-  /// to replace new lines to `<br>` tags
-  /// to make more simple to the parser works as we expect.
-  ///
-  /// HtmlToDelta works better with a single line html code
+  @Deprecated(
+      'trimText is no longer used and it will be removed in future releases')
   final bool trimText;
 
   /// Replace all new lines (\n) to `<br>`
@@ -95,6 +66,8 @@ class HtmlToDelta {
     HtmlOperations? htmlToOperations,
     this.blackNodesList = const [],
     this.customBlocks,
+    @Deprecated(
+        'trimText is no longer used and it will be removed in future releases')
     this.trimText = true,
     this.replaceNormalNewLinesToBr = false,
   }) {
@@ -120,10 +93,17 @@ class HtmlToDelta {
   /// print(delta.toJson()); // Output: [{"insert":"Hello "},{"insert":"world","attributes":{"bold":true}},{"insert":"\n"}]
   /// ```
   Delta convert(String htmlText) {
+    final parsedText = htmlText
+        .split('\n')
+        .map(
+          (e) => e.trimLeft(),
+        )
+        .join()
+        .removeAllNewLines;
     final Delta delta = Delta();
-    final dom.Document $document = dparser.parse(
-      replaceNormalNewLinesToBr ? htmlText.replaceAll('\n', '<br>') : htmlText,
-    );
+    final dom.Document $document = dparser.parse(replaceNormalNewLinesToBr
+        ? parsedText.transformNewLinesToBrTag
+        : parsedText);
     final dom.Element? $body = $document.body;
     final dom.Element? $html = $document.documentElement;
 
@@ -131,7 +111,8 @@ class HtmlToDelta {
     final List<dom.Node> nodesToProcess =
         $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
-    for (var node in nodesToProcess) {
+    for (int i = 0; i < nodesToProcess.length; i++) {
+      var node = nodesToProcess[i];
       //first just verify if the customBlocks aren't empty and then store on them to
       //validate if one of them make match with the current Node
       if (customBlocks != null &&
@@ -147,7 +128,10 @@ class HtmlToDelta {
           }
         }
       }
-      final List<Operation> operations = nodeToOperation(node, htmlToOp);
+      final nextNode = nodesToProcess.elementAtOrNull(i + 1);
+      final nextIsBlock = nextNode is dom.Element ? nextNode.isBlock : false;
+      final List<Operation> operations =
+          nodeToOperation(node, htmlToOp, nextIsBlock);
       if (operations.isNotEmpty) {
         for (final op in operations) {
           delta.insert(op.data, op.attributes);
@@ -192,7 +176,8 @@ class HtmlToDelta {
     final List<dom.Node> nodesToProcess =
         $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
-    for (var node in nodesToProcess) {
+    for (int i = 0; i < nodesToProcess.length; i++) {
+      var node = nodesToProcess[i];
       if (customBlocks != null &&
           customBlocks!.isNotEmpty &&
           node is dom.Element) {
@@ -206,7 +191,14 @@ class HtmlToDelta {
           }
         }
       }
-      final List<Operation> operations = nodeToOperation(node, htmlToOp);
+      final nextNode = nodesToProcess.elementAtOrNull(i + 1);
+      final nextIsBlock = nextNode == null
+          ? false
+          : nextNode is! dom.Element
+              ? false
+              : nextNode.isBlock;
+      final List<Operation> operations =
+          nodeToOperation(node, htmlToOp, nextIsBlock);
       if (operations.isNotEmpty) {
         for (final op in operations) {
           delta.insert(op.data, op.attributes);
@@ -241,19 +233,26 @@ class HtmlToDelta {
   /// final operations = converter.nodeToOperation(node.firstChild!, converter.htmlToOp);
   /// print(operations); // Output: [Operation{insert: "Hello", attributes: {bold: true}}]
   /// ```
-  List<Operation> nodeToOperation(dom.Node node, HtmlOperations htmlToOp) {
+  List<Operation> nodeToOperation(
+    dom.Node node,
+    HtmlOperations htmlToOp, [
+    bool nextIsBlock = false,
+  ]) {
     List<Operation> operations = [];
     if (node is dom.Text) {
-      operations.add(Operation.insert(trimText ? node.text.trim() : node.text));
+      operations
+          .add(Operation.insert(node.text));
     }
     if (node is dom.Element) {
       if (blackNodesList.contains(node.localName)) {
-        operations
-            .add(Operation.insert(trimText ? node.text.trim() : node.text));
+        if (nextIsBlock) operations.add(Operation.insert('\n'));
+        operations.add(
+            Operation.insert(node.text));
         return operations;
       }
       List<Operation> ops = htmlToOp.resolveCurrentElement(node);
       operations.addAll(ops);
+      if (nextIsBlock) operations.add(Operation.insert('\n'));
     }
 
     return operations;
