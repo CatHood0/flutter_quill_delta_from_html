@@ -1,3 +1,9 @@
+## 1.4.5
+
+* Fix: paragraph wrong breaks and weird trim() of some text elements by @CatHood0 in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/15
+
+**Full Changelog**: https://github.com/CatHood0/flutter_quill_delta_from_html/compare/V-1.4.3...V-1.4.5
+
 ## 1.4.3
 
 * Textcolor on paste of clipboard text showing wrong color by @SC8885 in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/13
