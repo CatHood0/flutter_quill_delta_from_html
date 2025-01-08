@@ -45,8 +45,7 @@ class HtmlToDelta {
   /// ```
   final List<String> blackNodesList;
 
-  @Deprecated(
-      'trimText is no longer used and it will be removed in future releases')
+  @Deprecated('trimText is no longer used and it will be removed in future releases')
   final bool trimText;
 
   /// Replace all new lines (\n) to `<br>`
@@ -58,6 +57,8 @@ class HtmlToDelta {
   /// is a common tags (`<p>`,`<li>`,`<h1>`,etc) or a body tags
   final bool replaceNormalNewLinesToBr;
 
+  final bool Function(String localName)? shouldInsertANewLine;
+
   /// Creates a new instance of HtmlToDelta.
   ///
   /// [htmlToOperations] defines how common HTML tags are converted to Delta operations.
@@ -66,9 +67,8 @@ class HtmlToDelta {
     HtmlOperations? htmlToOperations,
     this.blackNodesList = const [],
     this.customBlocks,
-    @Deprecated(
-        'trimText is no longer used and it will be removed in future releases')
-    this.trimText = true,
+    @Deprecated('trimText is no longer used and it will be removed in future releases') this.trimText = true,
+    this.shouldInsertANewLine,
     this.replaceNormalNewLinesToBr = false,
   }) {
     htmlToOp = htmlToOperations ?? DefaultHtmlToOperations();
@@ -101,23 +101,19 @@ class HtmlToDelta {
         .join()
         .removeAllNewLines;
     final Delta delta = Delta();
-    final dom.Document $document = dparser.parse(replaceNormalNewLinesToBr
-        ? parsedText.transformNewLinesToBrTag
-        : parsedText);
+    final dom.Document $document =
+        dparser.parse(replaceNormalNewLinesToBr ? parsedText.transformNewLinesToBrTag : parsedText);
     final dom.Element? $body = $document.body;
     final dom.Element? $html = $document.documentElement;
 
     // Determine nodes to process: <body>, <html>, or document nodes if neither is present
-    final List<dom.Node> nodesToProcess =
-        $body?.nodes ?? $html?.nodes ?? $document.nodes;
+    final List<dom.Node> nodesToProcess = $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (int i = 0; i < nodesToProcess.length; i++) {
       var node = nodesToProcess[i];
       //first just verify if the customBlocks aren't empty and then store on them to
       //validate if one of them make match with the current Node
-      if (customBlocks != null &&
-          customBlocks!.isNotEmpty &&
-          node is dom.Element) {
+      if (customBlocks != null && customBlocks!.isNotEmpty && node is dom.Element) {
         for (var customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
             final operations = customBlock.convert(node);
@@ -130,21 +126,23 @@ class HtmlToDelta {
       }
       final nextNode = nodesToProcess.elementAtOrNull(i + 1);
       final nextIsBlock = nextNode is dom.Element ? nextNode.isBlock : false;
-      final List<Operation> operations =
-          nodeToOperation(node, htmlToOp, nextIsBlock);
+      final List<Operation> operations = nodeToOperation(node, htmlToOp, nextIsBlock);
       if (operations.isNotEmpty) {
         for (final op in operations) {
           delta.insert(op.data, op.attributes);
         }
+      }
+      final shouldInsertNewLine =
+          shouldInsertANewLine?.call(node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
+      if (shouldInsertNewLine != null && shouldInsertNewLine) {
+        delta.insert('\n');
       }
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
     final lastOpdata = delta.last;
     final bool lastDataIsNotNewLine = lastOpdata.data.toString() != '\n';
     final bool hasAttributes = lastOpdata.attributes != null;
-    if (lastDataIsNotNewLine && hasAttributes ||
-        lastDataIsNotNewLine ||
-        !lastDataIsNotNewLine && hasAttributes) {
+    if (lastDataIsNotNewLine && hasAttributes || lastDataIsNotNewLine || !lastDataIsNotNewLine && hasAttributes) {
       delta.insert('\n');
     }
     return delta;
@@ -173,14 +171,11 @@ class HtmlToDelta {
     final dom.Element? $html = $document.documentElement;
 
     // Determine nodes to process: <body>, <html>, or document nodes if neither is present
-    final List<dom.Node> nodesToProcess =
-        $body?.nodes ?? $html?.nodes ?? $document.nodes;
+    final List<dom.Node> nodesToProcess = $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (int i = 0; i < nodesToProcess.length; i++) {
       var node = nodesToProcess[i];
-      if (customBlocks != null &&
-          customBlocks!.isNotEmpty &&
-          node is dom.Element) {
+      if (customBlocks != null && customBlocks!.isNotEmpty && node is dom.Element) {
         for (var customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
             final operations = customBlock.convert(node);
@@ -197,21 +192,23 @@ class HtmlToDelta {
           : nextNode is! dom.Element
               ? false
               : nextNode.isBlock;
-      final List<Operation> operations =
-          nodeToOperation(node, htmlToOp, nextIsBlock);
+      final List<Operation> operations = nodeToOperation(node, htmlToOp, nextIsBlock);
       if (operations.isNotEmpty) {
         for (final op in operations) {
           delta.insert(op.data, op.attributes);
         }
+      }
+      final shouldInsertNewLine =
+          shouldInsertANewLine?.call(node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
+      if (shouldInsertNewLine != null && shouldInsertNewLine) {
+        delta.insert('\n');
       }
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
     final lastOpdata = delta.last;
     final bool lastDataIsNotNewLine = lastOpdata.data.toString() != '\n';
     final bool hasAttributes = lastOpdata.attributes != null;
-    if (lastDataIsNotNewLine && hasAttributes ||
-        lastDataIsNotNewLine ||
-        !lastDataIsNotNewLine && hasAttributes) {
+    if (lastDataIsNotNewLine && hasAttributes || lastDataIsNotNewLine || !lastDataIsNotNewLine && hasAttributes) {
       delta.insert('\n');
     }
     return delta;
@@ -240,14 +237,12 @@ class HtmlToDelta {
   ]) {
     List<Operation> operations = [];
     if (node is dom.Text) {
-      operations
-          .add(Operation.insert(node.text));
+      operations.add(Operation.insert(node.text));
     }
     if (node is dom.Element) {
       if (blackNodesList.contains(node.localName)) {
         if (nextIsBlock) operations.add(Operation.insert('\n'));
-        operations.add(
-            Operation.insert(node.text));
+        operations.add(Operation.insert(node.text));
         return operations;
       }
       List<Operation> ops = htmlToOp.resolveCurrentElement(node);
