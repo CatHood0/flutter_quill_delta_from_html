@@ -1,3 +1,7 @@
+## 1.5.0
+
+* Feat: added a new way to insert a newline after a type of htmltag
+
 ## 1.4.5
 
 * Fix: paragraph wrong breaks and weird trim() of some text elements by @CatHood0 in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/15
