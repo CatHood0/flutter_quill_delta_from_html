@@ -277,8 +277,9 @@ class HtmlToDelta {
       List<Operation> ops = htmlToOp.resolveCurrentElement(node);
       operations.addAll(ops);
       // Check if the nextElement is a block AND if the last operation already has a new line, this would otherwise create a double new line
-      if (nextIsBlock && operations.last.data != '\n')
+      if (nextIsBlock && operations.last.data != '\n') {
         operations.add(Operation.insert('\n'));
+      }
     }
 
     return operations;
