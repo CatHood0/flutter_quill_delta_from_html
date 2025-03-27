@@ -97,7 +97,7 @@ class HtmlToDelta {
     final parsedText = htmlText
         .split('\n')
         .map(
-          (e) => e.trimLeft(),
+          (e) => e.trim(),
         )
         .join()
         .removeAllNewLines;
