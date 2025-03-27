@@ -1,3 +1,7 @@
+## 1.5.1
+
+* Feat: add isBlockValidator for Block Override decision
+
 ## 1.5.0
 
 * Feat: added a new way to insert a newline after a type of htmltag

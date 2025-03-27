@@ -57,7 +57,11 @@ class HtmlToDelta {
   /// is a common tags (`<p>`,`<li>`,`<h1>`,etc) or a body tags
   final bool replaceNormalNewLinesToBr;
 
+  /// Function to determine if a new line should be inserted after a node.
   final bool Function(String localName)? shouldInsertANewLine;
+
+  /// Function to determine if a node is a block element.
+  final bool Function(String localName)? isBlockValidator;
 
   /// Creates a new instance of HtmlToDelta.
   ///
@@ -69,6 +73,7 @@ class HtmlToDelta {
     this.customBlocks,
     @Deprecated('trimText is no longer used and it will be removed in future releases') this.trimText = true,
     this.shouldInsertANewLine,
+    this.isBlockValidator,
     this.replaceNormalNewLinesToBr = false,
   }) {
     htmlToOp = htmlToOperations ?? DefaultHtmlToOperations();
@@ -101,8 +106,7 @@ class HtmlToDelta {
         .join()
         .removeAllNewLines;
     final Delta delta = Delta();
-    final dom.Document $document =
-        dparser.parse(replaceNormalNewLinesToBr ? parsedText.transformNewLinesToBrTag : parsedText);
+    final dom.Document $document = dparser.parse(replaceNormalNewLinesToBr ? parsedText.transformNewLinesToBrTag : parsedText);
     final dom.Element? $body = $document.body;
     final dom.Element? $html = $document.documentElement;
 
@@ -125,15 +129,19 @@ class HtmlToDelta {
         }
       }
       final nextNode = nodesToProcess.elementAtOrNull(i + 1);
-      final nextIsBlock = nextNode is dom.Element ? nextNode.isBlock : false;
+
+      bool nextIsBlock = nextNode is dom.Element ? nextNode.isBlock : false;
+      if (isBlockValidator != null && isBlockValidator is! Function) {
+        nextIsBlock = isBlockValidator?.call(nextNode is dom.Element ? nextNode.localName ?? 'no-localname' : 'text-node') ?? false;
+      }
+
       final List<Operation> operations = nodeToOperation(node, htmlToOp, nextIsBlock);
       if (operations.isNotEmpty) {
         for (final op in operations) {
           delta.insert(op.data, op.attributes);
         }
       }
-      final shouldInsertNewLine =
-          shouldInsertANewLine?.call(node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
+      final shouldInsertNewLine = shouldInsertANewLine?.call(node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
       if (shouldInsertNewLine != null && shouldInsertNewLine) {
         delta.insert('\n');
       }
@@ -198,8 +206,7 @@ class HtmlToDelta {
           delta.insert(op.data, op.attributes);
         }
       }
-      final shouldInsertNewLine =
-          shouldInsertANewLine?.call(node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
+      final shouldInsertNewLine = shouldInsertANewLine?.call(node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
       if (shouldInsertNewLine != null && shouldInsertNewLine) {
         delta.insert('\n');
       }
