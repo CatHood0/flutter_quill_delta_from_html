@@ -1,6 +1,6 @@
 ## 1.5.1
 
-* Feat: add isBlockValidator for Block Override decision
+* Feat: add `isBlockValidator` for Block Override decision [#23](https://github.com/CatHood0/flutter_quill_delta_from_html/pull/23)
 
 ## 1.5.0
 
