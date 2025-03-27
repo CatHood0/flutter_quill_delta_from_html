@@ -6,7 +6,7 @@ repository: https://github.com/CatHood0/flutter_quill_delta_from_html
 issue_tracker: https://github.com/CatHood0/flutter_quill_delta_from_html/issues
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   dart_quill_delta: ^10.0.0
