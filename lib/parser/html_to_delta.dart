@@ -45,10 +45,6 @@ class HtmlToDelta {
   /// ```
   final List<String> blackNodesList;
 
-  @Deprecated(
-      'trimText is no longer used and it will be removed in future releases')
-  final bool trimText;
-
   /// Replace all new lines (\n) to `<br>`
   ///
   /// You will need to ensure of your html content **has not**
@@ -72,9 +68,6 @@ class HtmlToDelta {
     HtmlOperations? htmlToOperations,
     this.blackNodesList = const [],
     this.customBlocks,
-    @Deprecated(
-        'trimText is no longer used and it will be removed in future releases')
-    this.trimText = true,
     this.shouldInsertANewLine,
     this.isBlockValidator,
     this.replaceNormalNewLinesToBr = false,
