@@ -131,7 +131,7 @@ class HtmlToDelta {
       final nextNode = nodesToProcess.elementAtOrNull(i + 1);
 
       bool nextIsBlock = nextNode is dom.Element ? nextNode.isBlock : false;
-      if (isBlockValidator != null && isBlockValidator is! Function) {
+      if (isBlockValidator != null) {
         nextIsBlock = isBlockValidator?.call(nextNode is dom.Element ? nextNode.localName ?? 'no-localname' : 'text-node') ?? false;
       }
 
