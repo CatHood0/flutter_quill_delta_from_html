@@ -113,13 +113,13 @@ class HtmlToDelta {
         $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (int i = 0; i < nodesToProcess.length; i++) {
-      var node = nodesToProcess[i];
+      dom.Node node = nodesToProcess[i];
       //first just verify if the customBlocks aren't empty and then store on them to
       //validate if one of them make match with the current Node
       if (customBlocks != null &&
           customBlocks!.isNotEmpty &&
           node is dom.Element) {
-        for (var customBlock in customBlocks!) {
+        for (CustomHtmlPart customBlock in customBlocks!) {
           if (customBlock.matches(node)) {
             final operations = customBlock.convert(node);
             operations.forEach((Operation op) {
@@ -129,7 +129,7 @@ class HtmlToDelta {
           }
         }
       }
-      final nextNode = nodesToProcess.elementAtOrNull(i + 1);
+      final dom.Node? nextNode = nodesToProcess.elementAtOrNull(i + 1);
 
       bool nextIsBlock = nextNode is dom.Element ? nextNode.isBlock : false;
       if (isBlockValidator != null) {
@@ -146,14 +146,14 @@ class HtmlToDelta {
           delta.insert(op.data, op.attributes);
         }
       }
-      final shouldInsertNewLine = shouldInsertANewLine?.call(
+      final bool? shouldInsertNewLine = shouldInsertANewLine?.call(
           node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
       if (shouldInsertNewLine != null && shouldInsertNewLine) {
         delta.insert('\n');
       }
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
-    final lastOpdata = delta.last;
+    final Operation lastOpdata = delta.last;
     final bool lastDataIsNotNewLine = lastOpdata.data.toString() != '\n';
     final bool hasAttributes = lastOpdata.attributes != null;
     if (lastDataIsNotNewLine && hasAttributes ||
@@ -191,7 +191,7 @@ class HtmlToDelta {
         $body?.nodes ?? $html?.nodes ?? $document.nodes;
 
     for (int i = 0; i < nodesToProcess.length; i++) {
-      var node = nodesToProcess[i];
+      dom.Node node = nodesToProcess[i];
       if (customBlocks != null &&
           customBlocks!.isNotEmpty &&
           node is dom.Element) {
@@ -205,12 +205,18 @@ class HtmlToDelta {
           }
         }
       }
-      final nextNode = nodesToProcess.elementAtOrNull(i + 1);
-      final nextIsBlock = nextNode == null
+      final dom.Node? nextNode = nodesToProcess.elementAtOrNull(i + 1);
+      bool nextIsBlock = nextNode == null
           ? false
           : nextNode is! dom.Element
               ? false
               : nextNode.isBlock;
+      if (isBlockValidator != null) {
+        nextIsBlock = isBlockValidator?.call(nextNode is dom.Element
+                ? nextNode.localName ?? 'no-localname'
+                : 'text-node') ??
+            false;
+      }
       final List<Operation> operations =
           nodeToOperation(node, htmlToOp, nextIsBlock);
       if (operations.isNotEmpty) {
@@ -218,14 +224,14 @@ class HtmlToDelta {
           delta.insert(op.data, op.attributes);
         }
       }
-      final shouldInsertNewLine = shouldInsertANewLine?.call(
+      final bool? shouldInsertNewLine = shouldInsertANewLine?.call(
           node is dom.Element ? node.localName ?? 'no-localname' : 'text-node');
       if (shouldInsertNewLine != null && shouldInsertNewLine) {
         delta.insert('\n');
       }
     }
     //ensure insert a new line at the final to avoid any conflict with assertions
-    final lastOpdata = delta.last;
+    final Operation lastOpdata = delta.last;
     final bool lastDataIsNotNewLine = lastOpdata.data.toString() != '\n';
     final bool hasAttributes = lastOpdata.attributes != null;
     if (lastDataIsNotNewLine && hasAttributes ||
