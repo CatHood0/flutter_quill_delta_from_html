@@ -58,6 +58,59 @@ abstract class HtmlOperations {
     if (element.isBlockquote) ops.addAll(blockquoteToOp(element));
     if (element.isCodeBlock) ops.addAll(codeblockToOp(element));
     if (element.isDivBlock) ops.addAll(divToOp(element));
+
+    // Handle blocks within <li>
+    if (element.localName?.toLowerCase() == 'li') {
+      // Process list item's children with awareness of block transitions
+      final List<Operation> listItemOps = [];
+      bool previousWasInlineElement = false;
+
+      // Determine list type based on parent element
+      String listType = 'bullet'; // Default
+      if (element.parent != null) {
+        if (element.parent!.localName?.toLowerCase() == 'ol') {
+          listType = 'ordered';
+        } else if (element.parent!.localName?.toLowerCase() == 'ul') {
+          listType = 'bullet';
+        }
+      }
+
+      for (int i = 0; i < element.nodes.length; i++) {
+        final childNode = element.nodes[i];
+        final nextChild =
+            i < element.nodes.length - 1 ? element.nodes[i + 1] : null;
+
+        // Process each child node
+        if (childNode is dom.Element) {
+          final childOps = resolveCurrentElement(childNode);
+
+          // Check if transitioning from inline to block element
+          if (previousWasInlineElement && childNode.isBlock) {
+            // Add newline between inline element and block element
+            listItemOps.add(Operation.insert('\n'));
+          }
+
+          // Add operations from this child
+          listItemOps.addAll(childOps);
+
+          // Track if this was an inline or block element
+          previousWasInlineElement = !childNode.isBlock;
+        } else if (childNode is dom.Text && childNode.text.trim().isNotEmpty) {
+          // Add text node
+          listItemOps.add(Operation.insert(childNode.text));
+          previousWasInlineElement = true;
+        }
+      }
+
+      // Ensure list item ends with a newline
+      if (listItemOps.isNotEmpty && listItemOps.last.data != '\n') {
+        listItemOps.add(Operation.insert('\n', {
+          'list': listType,
+        }));
+      }
+
+      ops.addAll(listItemOps);
+    }
     return ops;
   }
 
