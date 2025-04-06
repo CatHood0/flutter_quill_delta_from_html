@@ -69,6 +69,9 @@ extension NodeExt on Element {
   ///Ensure to detect div html tags
   bool get isDivBlock => localName == 'div';
 
+  ///Ensure to detect table html tags
+  bool get isTable => ['table', 'tbody', 'thead', 'tfoot', 'tr', 'td'].contains(localName);
+
   String getSafeAttribute(String attr) {
     return attributes[attr] ?? '';
   }

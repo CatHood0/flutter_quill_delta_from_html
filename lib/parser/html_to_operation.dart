@@ -58,6 +58,7 @@ abstract class HtmlOperations {
     if (element.isBlockquote) ops.addAll(blockquoteToOp(element));
     if (element.isCodeBlock) ops.addAll(codeblockToOp(element));
     if (element.isDivBlock) ops.addAll(divToOp(element));
+    if (element.isTable) ops.addAll(tableToOp(element));
     return ops;
   }
 
@@ -93,6 +94,9 @@ abstract class HtmlOperations {
 
   /// Converts a div HTML element (`<div>`) to Delta operations.
   List<Operation> divToOp(dom.Element element);
+
+  /// Converts a table HTML element (`<table>`) to Delta operations.
+  List<Operation> tableToOp(dom.Element element);
 
   /// Sets custom HTML parts to extend the conversion capabilities.
   ///
