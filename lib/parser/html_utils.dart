@@ -102,8 +102,12 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           attributes['font'] = value;
           break;
         case 'line-height':
-          final lineHeight = parseLineHeight(value, fontSize: fontSize ?? 16.0);
-          attributes['line-height'] = lineHeight;
+          try {
+            final lineHeight = parseLineHeight(value, fontSize: fontSize ?? 16.0);
+            attributes['line-height'] = lineHeight;
+          } catch (e) {
+            //ignore error (i.e. 'line-height: inherit;')
+          }
           break;
         default:
           break;
