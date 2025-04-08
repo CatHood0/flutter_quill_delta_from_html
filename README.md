@@ -34,6 +34,9 @@ This is a **Dart** package that converts **HTML** input into Quill **Delta** for
     <!--div-->
         <div>: HTML tag containers
         
+    <!--Table-->
+        <table>: HTML tag for Tables (basic support) 
+        
     <!--Videos -->
         <video>: Videos with support for the src
 

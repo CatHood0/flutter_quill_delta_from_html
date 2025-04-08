@@ -390,6 +390,29 @@ void main() {
     expect(deltaReversed, expectedDeltaRevered);
   });
 
+  test('Basic table', () {
+    const html = '''
+  <table>
+    <tr>
+      <td>Emil</td>
+      <td>Tobias</td>
+      <td>Linus</td>
+      </tr>
+  </table>
+''';
+
+    final converter = HtmlToDelta();
+    final delta = converter.convert(html);
+
+    final expectedDelta = Delta()
+      ..insert('Emil')
+      ..insert('Tobias')
+      ..insert('Linus')
+      ..insert('\n');
+
+    expect(delta, expectedDelta);
+  });
+
   test('Paragraph with colors', () {
     const html =
         '<p><span style="color:#F06292FF">This is just pink </span><br/><br/><span style="color:#4DD0E1FF">This is just blue</span></p>';

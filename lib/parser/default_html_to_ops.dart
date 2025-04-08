@@ -242,7 +242,8 @@ class DefaultHtmlToOperations extends HtmlOperations {
   List<Operation> imgToOp(dom.Element element) {
     final String src = element.getSafeAttribute('src');
     final String styles = element.getSafeAttribute('style');
-    final attributes = parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
+    final attributes =
+        parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
     if (src.isNotEmpty) {
       return [
         Operation.insert(
