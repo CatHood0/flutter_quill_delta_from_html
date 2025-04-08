@@ -242,8 +242,7 @@ class DefaultHtmlToOperations extends HtmlOperations {
   List<Operation> imgToOp(dom.Element element) {
     final String src = element.getSafeAttribute('src');
     final String styles = element.getSafeAttribute('style');
-    final attributes =
-        parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
+    final attributes = parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
     if (src.isNotEmpty) {
       return [
         Operation.insert(
@@ -309,5 +308,23 @@ class DefaultHtmlToOperations extends HtmlOperations {
   @override
   List<Operation> brToOp(dom.Element element) {
     return [Operation.insert('\n')];
+  }
+
+  @override
+  List<Operation> tableToOp(dom.Element element) {
+    final List<Operation> ops = [];
+
+    for (final node in element.nodes) {
+      if (node.nodeType == dom.Node.ELEMENT_NODE) {
+        final element = node as dom.Element;
+        if (element.localName == 'td') {
+          ops.addAll(paragraphToOp(element));
+        } else {
+          ops.addAll(divToOp(element));
+        }
+      }
+    }
+
+    return ops;
   }
 }
