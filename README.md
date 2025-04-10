@@ -74,7 +74,7 @@ import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart
 
 void main() {
   String htmlContent = "<p>Hello, <b>world</b>!</p>";
-  var delta = HtmlToDelta().convert(htmlContent);
+  var delta = HtmlToDelta().convert(htmlContent, transformTableAsEmbed: false);
 /*
    { "insert": "hello, " },
    { "insert": "world", "attributes": {"bold": true} },
