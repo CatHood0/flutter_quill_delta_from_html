@@ -413,6 +413,46 @@ void main() {
     expect(delta, expectedDelta);
   });
 
+  test('Basic embed table', () {
+    const html = '''
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Lastname</th>
+      <th>OS</th>
+    </tr>
+    <tr>
+      <td>Emil</td>
+      <td>Tobias</td>
+      <td>Linux</td>
+    </tr>
+  </table>
+''';
+
+    final converter = HtmlToDelta();
+    final delta = converter.convert(html, transformTableAsEmbed: true);
+
+    final expectedDelta = Delta()
+      ..insert(
+        <String, Map<String, Map<String, dynamic>>>{
+          'table': <String, Map<String, dynamic>>{
+            'headers': <String, dynamic>{
+              '0': 'Name',
+              '1': 'Lastname',
+              '2': 'OS',
+            },
+            'rows': <String, dynamic>{
+              // cells are represented using list of strings
+              '0': ['Emil', 'Tobias', 'Linux'],
+            },
+          },
+        },
+      )
+      ..insert('\n');
+
+    expect(delta, expectedDelta);
+  });
+
   test('Paragraph with colors', () {
     const html =
         '<p><span style="color:#F06292FF">This is just pink </span><br/><br/><span style="color:#4DD0E1FF">This is just blue</span></p>';

@@ -312,10 +312,86 @@ class DefaultHtmlToOperations extends HtmlOperations {
   }
 
   @override
-  List<Operation> tableToOp(dom.Element element) {
-    final List<Operation> ops = [];
+  List<Operation> tableToOp(
+    dom.Element element, [
+    bool transformTableAsEmbed = false,
+  ]) {
+    final Map<String, dynamic> table = <String, dynamic>{
+      'headers': <String, dynamic>{},
+      'rows': <String, dynamic>{},
+    };
+    final dom.Element? tBody = element.children.firstOrNull;
+    if (transformTableAsEmbed) {
+      int rowIndex = 0;
+      for (final dom.Node node in (tBody ?? element).nodes) {
+        final List<Operation> ops = <Operation>[];
+        final bool isHeaderRow = node is dom.Element &&
+            node.localName == 'tr' &&
+            node.children.isNotEmpty &&
+            node.children.firstOrNull?.localName == 'th';
+        if (isHeaderRow) {
+          int index = 0;
+          final Map<String, dynamic> header = <String, dynamic>{};
+          for (final dom.Element hNode in node.children) {
+            if (hNode.text.isNotEmpty) {
+              header['$index'] = hNode.text;
+              index++;
+            }
+          }
+          if (header.isNotEmpty) {
+            table['headers'] = <String, dynamic>{
+              ...header,
+            };
+          }
+          continue;
+        }
+        if (node is! dom.Element && node.text != null) {
+          ops.add(Operation.insert(node.text!));
+          table['rows']['$rowIndex'] = <String>[
+            ...ops.map<String>((
+              Operation e,
+            ) =>
+                e.data!.toString()),
+          ];
+          rowIndex++;
+        } else {
+          final dom.Element nodeEl = node as dom.Element;
+          if (nodeEl.localName == 'tr') {
+            for (final dom.Element cellNodes in nodeEl.children) {
+              final List<Operation> cellOps = cellNodes.localName == 'td'
+                  ? paragraphToOp(cellNodes)
+                  : divToOp(cellNodes);
+              if (table['rows']['$rowIndex'] != null) {
+                table['rows']['$rowIndex'].addAll(
+                  cellOps
+                      .map<String>((
+                        Operation e,
+                      ) =>
+                          e.data!.toString())
+                      .toList(),
+                );
+                continue;
+              }
+              table['rows']['$rowIndex'] = <String>[
+                ...cellOps.map<String>((
+                  Operation e,
+                ) =>
+                    e.data!.toString()),
+              ];
+            }
+            rowIndex++;
+          }
+        }
+      }
+      return <Operation>[
+        Operation.insert(<String, Map<String, dynamic>>{
+          'table': table,
+        })
+      ];
+    }
 
-    for (final node in element.nodes) {
+    final List<Operation> ops = <Operation>[];
+    for (final dom.Node node in element.nodes) {
       if (node.nodeType == dom.Node.ELEMENT_NODE) {
         final element = node as dom.Element;
         if (element.localName == 'td') {

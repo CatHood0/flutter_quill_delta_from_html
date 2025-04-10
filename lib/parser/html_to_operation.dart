@@ -21,8 +21,11 @@ abstract class HtmlOperations {
   ///
   /// Returns:
   /// A list of Delta operations corresponding to the HTML element.
-  List<Operation> resolveCurrentElement(dom.Element element,
-      [int indentLevel = 0]) {
+  List<Operation> resolveCurrentElement(
+    dom.Element element, [
+    int indentLevel = 0,
+    bool transformTableAsEmbed = false,
+  ]) {
     List<Operation> ops = [];
     if (element.localName == null) {
       return ops..add(Operation.insert(element.text));
@@ -58,7 +61,12 @@ abstract class HtmlOperations {
     if (element.isBlockquote) ops.addAll(blockquoteToOp(element));
     if (element.isCodeBlock) ops.addAll(codeblockToOp(element));
     if (element.isDivBlock) ops.addAll(divToOp(element));
-    if (element.isTable) ops.addAll(tableToOp(element));
+    if (element.isTable) {
+      ops.addAll(tableToOp(
+        element,
+        transformTableAsEmbed,
+      ));
+    }
     return ops;
   }
 
@@ -96,7 +104,8 @@ abstract class HtmlOperations {
   List<Operation> divToOp(dom.Element element);
 
   /// Converts a table HTML element (`<table>`) to Delta operations.
-  List<Operation> tableToOp(dom.Element element);
+  List<Operation> tableToOp(dom.Element element,
+      [bool transformTableAsEmbed = false]);
 
   /// Sets custom HTML parts to extend the conversion capabilities.
   ///

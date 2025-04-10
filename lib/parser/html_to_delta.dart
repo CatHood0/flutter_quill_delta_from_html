@@ -84,6 +84,7 @@ class HtmlToDelta {
   ///
   /// Parameters:
   /// - [htmlText]: The HTML string to convert into Delta operations.
+  /// - [transformTableAsEmbed]: Determine if the table will be inserted as an embed or a simple paragraph.
   ///
   /// Returns:
   /// A Delta object representing the formatted content from HTML.
@@ -93,7 +94,10 @@ class HtmlToDelta {
   /// final delta = converter.convert('<p>Hello <strong>world</strong></p>');
   /// print(delta.toJson()); // Output: [{"insert":"Hello "},{"insert":"world","attributes":{"bold":true}},{"insert":"\n"}]
   /// ```
-  Delta convert(String htmlText) {
+  Delta convert(
+    String htmlText, {
+    bool transformTableAsEmbed = false,
+  }) {
     final parsedText = htmlText
         .split('\n')
         .map(
@@ -139,8 +143,13 @@ class HtmlToDelta {
             false;
       }
 
-      final List<Operation> operations =
-          nodeToOperation(node, htmlToOp, nextIsBlock);
+      final List<Operation> operations = nodeToOperation(
+        node,
+        htmlToOp,
+        nextIsBlock,
+        transformTableAsEmbed,
+      );
+
       if (operations.isNotEmpty) {
         for (final op in operations) {
           delta.insert(op.data, op.attributes);
@@ -183,7 +192,10 @@ class HtmlToDelta {
   /// final delta = converter.convertDocument(document);
   /// print(delta.toJson()); // Output: [{"insert":"Hello "},{"insert":"world","attributes":{"bold":true}},{"insert":"\n"}]
   /// ```
-  Delta convertDocument(dom.Document $document) {
+  Delta convertDocument(
+    dom.Document $document, {
+    bool transformTableAsEmbed = false,
+  }) {
     final Delta delta = Delta();
     final dom.Element? $body = $document.body;
     final dom.Element? $html = $document.documentElement;
@@ -219,8 +231,12 @@ class HtmlToDelta {
                 : 'text-node') ??
             false;
       }
-      final List<Operation> operations =
-          nodeToOperation(node, htmlToOp, nextIsBlock);
+      final List<Operation> operations = nodeToOperation(
+        node,
+        htmlToOp,
+        nextIsBlock,
+        transformTableAsEmbed,
+      );
       if (operations.isNotEmpty) {
         for (final op in operations) {
           delta.insert(op.data, op.attributes);
@@ -264,6 +280,7 @@ class HtmlToDelta {
     dom.Node node,
     HtmlOperations htmlToOp, [
     bool nextIsBlock = false,
+    bool transformTableAsEmbed = false,
   ]) {
     List<Operation> operations = [];
     if (node is dom.Text) {
@@ -275,9 +292,15 @@ class HtmlToDelta {
         operations.add(Operation.insert(node.text));
         return operations;
       }
-      List<Operation> ops = htmlToOp.resolveCurrentElement(node);
+      List<Operation> ops = htmlToOp.resolveCurrentElement(
+        node,
+        0,
+        transformTableAsEmbed,
+      );
       operations.addAll(ops);
-      // Check if the nextElement is a block AND if the last operation already has a new line, this would otherwise create a double new line
+      // Check if the nextElement is a block AND if the last
+      // operation already has a new line, this would otherwise
+      // create a double new line
       if (nextIsBlock && operations.last.data != '\n') {
         operations.add(Operation.insert('\n'));
       }
