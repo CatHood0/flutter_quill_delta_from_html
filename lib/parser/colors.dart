@@ -15,6 +15,7 @@
 /// print(validateAndGetColor('#ff0000')); // Output: #ff0000
 /// print(validateAndGetColor('rgb(255, 0, 0)')); // Output: #ff0000
 /// print(validateAndGetColor('hsl(0, 100%, 50%)')); // Output: #ff0000
+/// print(validateAndGetColor('red')); // Output: #ff0000
 /// ```
 String? validateAndGetColor(String colorString) {
   //verify if the color already is a hex
@@ -33,6 +34,8 @@ String? validateAndGetColor(String colorString) {
 /// - If [color] starts with 'rgba(', converts it using [rgbaToHex].
 /// - If [color] starts with 'hsl(', converts it using [hslToHex].
 /// - If [color] starts with 'hsla(', converts it using [hslaToHex].
+/// - Otherwise, treats it as a color name and converts it using [colorNameToHex].
+/// 
 /// Throws [ArgumentError] if the color format is not supported.
 ///
 /// Parameters:
@@ -45,6 +48,7 @@ String? validateAndGetColor(String colorString) {
 /// ```dart
 /// print(colorToHex('rgb(255, 0, 0)')); // Output: #ff0000
 /// print(colorToHex('hsla(0, 100%, 50%, 0.5)')); // Output: #ff0000
+/// print(colorToHex('red')); // Output: #ff0000
 /// ```
 String? colorToHex(String color) {
   // Detectar el tipo de color y llamar a la función correspondiente
