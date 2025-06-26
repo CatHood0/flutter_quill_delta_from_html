@@ -1,4 +1,5 @@
 import 'package:flutter_quill_delta_from_html/parser/indent_parser.dart';
+
 import 'colors.dart';
 import 'font_size_parser.dart';
 import 'line_height_parser.dart';
@@ -110,6 +111,20 @@ Map<String, dynamic> parseStyleAttribute(String style) {
             //ignore error (i.e. 'line-height: inherit;')
           }
           break;
+        case 'font-style':
+          if (value == 'italic') {
+            attributes['italic'] = true;
+          }
+          break;
+        case 'text-decoration':
+          if (value == 'underline') {
+            attributes['underline'] = true;
+          }
+          break;
+        case 'font-weight':
+          if (value == 'bold') {
+            attributes['bold'] = true;
+          }
         default:
           break;
       }
