@@ -112,13 +112,16 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           }
           break;
         case 'font-style':
-          if (value == 'italic') {
+          if (value.contains('italic')) {
             attributes['italic'] = true;
           }
           break;
         case 'text-decoration':
-          if (value == 'underline') {
+          if (value.contains('underline')) {
             attributes['underline'] = true;
+          }
+          if (value.contains('line-through')) {
+            attributes['strike'] = true;
           }
           break;
         case 'font-weight':
