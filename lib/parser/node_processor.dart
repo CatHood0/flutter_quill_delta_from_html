@@ -28,6 +28,7 @@ void processNode(
   bool addSpanAttrs = false,
   List<CustomHtmlPart>? customBlocks,
   List<String>? removeTheseAttributesFromSpan,
+  CSSVarible? onDetectLineheightCssVariable,
 }) {
   if (node is dom.Text) {
     delta.insert(node.text, attributes.isEmpty ? null : attributes);
@@ -57,8 +58,11 @@ void processNode(
     } else {
       // Handle <span> tags
       if (node.isSpan) {
-        final spanAttributes =
-            parseStyleAttribute(node.getSafeAttribute('style'));
+        final spanAttributes = parseStyleAttribute(
+          node.localName!,
+          node.getSafeAttribute('style'),
+          onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+        );
         if (addSpanAttrs) {
           newAttributes.remove('align');
           newAttributes.remove('direction');
@@ -127,7 +131,13 @@ void processNode(
 
     // Recursively process child nodes
     for (final child in node.nodes) {
-      processNode(child, newAttributes, delta, addSpanAttrs: addSpanAttrs);
+      processNode(
+        child,
+        newAttributes,
+        delta,
+        addSpanAttrs: addSpanAttrs,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
     }
   }
 }

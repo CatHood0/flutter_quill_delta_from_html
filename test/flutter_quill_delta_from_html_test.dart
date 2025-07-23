@@ -5,6 +5,29 @@ import 'package:flutter_quill_delta_from_html/flutter_quill_delta_from_html.dart
 
 void main() {
   group('HtmlToDelta tests', () {
+    test('Paragraph with css variable', () {
+      const html =
+          '<p>This is a paragraph with a <span style="line-height: var(--custom-var)">CSS custom var</span> example</p>';
+      final converter = HtmlToDelta(onDetectLineheightCssVariable: (
+        String tag,
+        String keyProperty,
+        String value,
+      ) {
+        if (tag == 'span' && value == 'var(--custom-var)') {
+          return 2.0;
+        }
+        return null;
+      });
+      final delta = converter.convert(html);
+
+      final expectedDelta = Delta()
+        ..insert('This is a paragraph with a ')
+        ..insert('CSS custom var', {'line-height': 2.0})
+        ..insert(' example')
+        ..insert('\n');
+
+      expect(delta, expectedDelta);
+    });
     test('Header with styles', () {
       const html =
           '<h3 style="text-align:right">Header example 3 <span style="background-color: var(--fgColor-muted, var(--color-fg-muted));color: rgb(255,255,255);"><i>with</i> a spanned italic text</span></h3>';

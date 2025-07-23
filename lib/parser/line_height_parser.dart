@@ -1,5 +1,7 @@
 /// constant common line-height multiplier
 const normalLineHeightMultiplier = 1.2;
+final RegExp _cssVariables =
+    RegExp(r'var\(\s*--([a-zA-Z0-9_-]+)\s*\)|^var\(.+');
 
 /// Parses a CSS `line-height` value to a pixel value based on the specified [fontSize] and optional [rootFontSize].
 ///
@@ -28,8 +30,11 @@ const normalLineHeightMultiplier = 1.2;
 /// print(parseLineHeight('1.5em')); // 24.0 (16 * 1.5)
 /// print(parseLineHeight('1.2rem')); // 19.2 (16 * 1.2)
 /// ```
-double parseLineHeight(String lineHeight,
-    {double fontSize = 16, double rootFontSize = 16}) {
+double parseLineHeight(
+  String lineHeight, {
+  double fontSize = 16,
+  double rootFontSize = 16,
+}) {
   // Convert line-height values
   double parsedValue;
   if (lineHeight.endsWith('px')) {
@@ -43,8 +48,10 @@ double parseLineHeight(String lineHeight,
     parsedValue = fontSize * double.parse(lineHeight.replaceAll('em', ''));
   } else if (lineHeight == 'normal') {
     parsedValue = fontSize * normalLineHeightMultiplier;
+  } else if (lineHeight.startsWith(_cssVariables)) {
+    parsedValue = 1.0;
   } else {
-    parsedValue = fontSize * double.parse(lineHeight);
+    parsedValue = fontSize * (double.tryParse(lineHeight) ?? 1.0);
   }
 
   // Apply additional constraints

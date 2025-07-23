@@ -1,4 +1,5 @@
 import 'package:flutter_quill_delta_from_html/parser/indent_parser.dart';
+import 'package:flutter_quill_delta_from_html/parser/typedef/typedefs.dart';
 
 import 'colors.dart';
 import 'font_size_parser.dart';
@@ -34,7 +35,11 @@ bool isInline(String tag) {
 /// final style = 'color: #ff0000; font-size: 16px;';
 /// print(parseStyleAttribute(style)); // Output: {'color': '#ff0000', 'size': '16'}
 /// ```
-Map<String, dynamic> parseStyleAttribute(String style) {
+Map<String, dynamic> parseStyleAttribute(
+  String tag,
+  String style, {
+  CSSVarible? onDetectLineheightCssVariable,
+}) {
   Map<String, dynamic> attributes = {};
   if (style.isEmpty) return attributes;
 
@@ -103,12 +108,21 @@ Map<String, dynamic> parseStyleAttribute(String style) {
           attributes['font'] = value;
           break;
         case 'line-height':
-          try {
-            final lineHeight =
-                parseLineHeight(value, fontSize: fontSize ?? 16.0);
+          double? lineHeight;
+          if (onDetectLineheightCssVariable != null) {
+            lineHeight = onDetectLineheightCssVariable(tag, key, value);
+          }
+
+          if (lineHeight == null) {
+            try {
+              lineHeight = parseLineHeight(value, fontSize: fontSize ?? 16.0);
+            } catch (e) {
+              //ignore error (i.e. 'line-height: inherit;')
+            }
+          }
+
+          if (lineHeight != null) {
             attributes['line-height'] = lineHeight;
-          } catch (e) {
-            //ignore error (i.e. 'line-height: inherit;')
           }
           break;
         case 'font-style':

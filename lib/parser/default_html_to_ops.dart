@@ -2,6 +2,7 @@ import 'package:dart_quill_delta/dart_quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
 import 'package:flutter_quill_delta_from_html/parser/html_to_operation.dart';
 import 'package:flutter_quill_delta_from_html/parser/html_utils.dart';
+import 'package:flutter_quill_delta_from_html/parser/typedef/typedefs.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:flutter_quill_delta_from_html/parser/node_processor.dart';
 
@@ -11,7 +12,11 @@ import 'package:flutter_quill_delta_from_html/parser/node_processor.dart';
 /// like paragraphs, headers, lists, links, images, videos, code blocks, and blockquotes
 /// into Delta operations.
 class DefaultHtmlToOperations extends HtmlOperations {
-  DefaultHtmlToOperations();
+  final CSSVarible? onDetectLineheightCssVariable;
+
+  DefaultHtmlToOperations(
+    this.onDetectLineheightCssVariable,
+  );
 
   @override
   List<Operation> paragraphToOp(dom.Element element) {
@@ -26,9 +31,21 @@ class DefaultHtmlToOperations extends HtmlOperations {
       final String style = attributes['style'] ?? '';
       final String? styles2 = attributes['align'];
       final String? styles3 = attributes['dir'];
-      final styleAttributes = parseStyleAttribute(style);
-      final alignAttribute = parseStyleAttribute(styles2 ?? '');
-      final dirAttribute = parseStyleAttribute(styles3 ?? '');
+      final styleAttributes = parseStyleAttribute(
+        element.localName!,
+        style,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
+      final alignAttribute = parseStyleAttribute(
+        element.localName!,
+        styles2 ?? '',
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
+      final dirAttribute = parseStyleAttribute(
+        element.localName!,
+        styles3 ?? '',
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
       styleAttributes.addAll({...alignAttribute, ...dirAttribute});
       if (styleAttributes.containsKey('align') ||
           styleAttributes.containsKey('direction') ||
@@ -46,8 +63,14 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta,
-          addSpanAttrs: true, customBlocks: customBlocks);
+      processNode(
+        node,
+        inlineAttributes,
+        delta,
+        addSpanAttrs: true,
+        customBlocks: customBlocks,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
     }
     if (blockAttributes.isNotEmpty) {
       blockAttributes.removeWhere((key, value) => value == null);
@@ -65,7 +88,11 @@ class DefaultHtmlToOperations extends HtmlOperations {
     // Process the style attribute
     if (attributes.containsKey('style')) {
       final String? style = attributes['style'];
-      final styleAttributes = parseStyleAttribute(style ?? '');
+      final styleAttributes = parseStyleAttribute(
+        element.localName!,
+        style ?? '',
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
       if (styleAttributes.containsKey('align')) {
         styleAttributes.remove('align');
       }
@@ -75,8 +102,14 @@ class DefaultHtmlToOperations extends HtmlOperations {
     //this store into all nodes into a paragraph, and
     //ensure getting all attributes or tags into a paragraph
     for (final node in nodes) {
-      processNode(node, inlineAttributes, delta,
-          addSpanAttrs: false, customBlocks: customBlocks);
+      processNode(
+        node,
+        inlineAttributes,
+        delta,
+        addSpanAttrs: false,
+        customBlocks: customBlocks,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
     }
 
     return delta.toList();
@@ -93,7 +126,12 @@ class DefaultHtmlToOperations extends HtmlOperations {
 
     final nodes = element.nodes;
     for (final node in nodes) {
-      processNode(node, attributes, delta);
+      processNode(
+        node,
+        attributes,
+        delta,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
     }
 
     return delta.toList();
@@ -111,9 +149,21 @@ class DefaultHtmlToOperations extends HtmlOperations {
       final String style = element.getSafeAttribute('style');
       final String styles2 = element.getSafeAttribute('align');
       final String styles3 = element.getSafeAttribute('dir');
-      final styleAttributes = parseStyleAttribute(style);
-      final alignAttribute = parseStyleAttribute(styles2);
-      final dirAttribute = parseStyleAttribute(styles3);
+      final styleAttributes = parseStyleAttribute(
+        element.localName!,
+        style,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
+      final alignAttribute = parseStyleAttribute(
+        element.localName!,
+        styles2,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
+      final dirAttribute = parseStyleAttribute(
+        element.localName!,
+        styles3,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
       styleAttributes.addAll({...alignAttribute, ...dirAttribute});
       if (styleAttributes.containsKey('align') ||
           styleAttributes.containsKey('direction') ||
@@ -133,8 +183,14 @@ class DefaultHtmlToOperations extends HtmlOperations {
 
     final nodes = element.nodes;
     for (final node in nodes) {
-      processNode(node, attributes, delta,
-          addSpanAttrs: true, removeTheseAttributesFromSpan: ['size']);
+      processNode(
+        node,
+        attributes,
+        delta,
+        addSpanAttrs: true,
+        removeTheseAttributesFromSpan: ['size'],
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
     }
     // Ensure a newline is added at the end of the header with the correct attributes
     if (blockAttributes.isNotEmpty) {
@@ -151,7 +207,11 @@ class DefaultHtmlToOperations extends HtmlOperations {
 
     if (element.attributes.containsKey('style')) {
       final String style = element.attributes['style']!;
-      final styleAttributes = parseStyleAttribute(style);
+      final styleAttributes = parseStyleAttribute(
+        element.localName!,
+        style,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
       attributes.addAll(styleAttributes);
     }
     for (final node in element.nodes) {
@@ -200,7 +260,11 @@ class DefaultHtmlToOperations extends HtmlOperations {
       int indent = indentLevel;
       if (checkbox == null) {
         final dataChecked = item.getSafeAttribute('data-checked');
-        final blockAttrs = parseStyleAttribute(dataChecked);
+        final blockAttrs = parseStyleAttribute(
+          element.localName!,
+          dataChecked,
+          onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+        );
         var isCheckList = item.localName == 'li' &&
             blockAttrs.isNotEmpty &&
             blockAttrs.containsKey('list');
@@ -242,8 +306,10 @@ class DefaultHtmlToOperations extends HtmlOperations {
   List<Operation> imgToOp(dom.Element element) {
     final String src = element.getSafeAttribute('src');
     final String styles = element.getSafeAttribute('style');
-    final attributes =
-        parseImageStyleAttribute(styles, element.getSafeAttribute('align'));
+    final attributes = parseImageStyleAttribute(
+      styles,
+      element.getSafeAttribute('align'),
+    );
     if (src.isNotEmpty) {
       return [
         Operation.insert(
@@ -284,7 +350,12 @@ class DefaultHtmlToOperations extends HtmlOperations {
     Map<String, dynamic> blockAttributes = {'blockquote': true};
 
     for (final node in element.nodes) {
-      processNode(node, {}, delta);
+      processNode(
+        node,
+        {},
+        delta,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
     }
 
     delta.insert('\n', blockAttributes);
@@ -298,7 +369,12 @@ class DefaultHtmlToOperations extends HtmlOperations {
     Map<String, dynamic> blockAttributes = {'code-block': true};
 
     for (final node in element.nodes) {
-      processNode(node, {}, delta);
+      processNode(
+        node,
+        {},
+        delta,
+        onDetectLineheightCssVariable: onDetectLineheightCssVariable,
+      );
     }
 
     delta.insert('\n', blockAttributes);

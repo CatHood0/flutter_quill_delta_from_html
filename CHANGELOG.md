@@ -1,3 +1,16 @@
+## 1.5.3
+
+* Feat: support to detect line height css variable and setting custom values
+* Feat: Add support for italic, underline, line-through and bold from CSS styling by @lecuivre-alban in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/29
+* Refactor: Safely access 'last' element in operations by @nikiforosper in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/28
+* Feat: CSS named color support by @SlickSlime in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/27
+* Fix: line-height css variable issue [#21](https://github.com/CatHood0/flutter_quill_delta_from_html/issues/21)
+
+## New Contributors
+* @lecuivre-alban made their first contribution in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/29
+* @nikiforosper made their first contribution in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/28
+* @SlickSlime made their first contribution in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/27
+
 ## 1.5.2
 
 * Feat: Handle table tags / handle line-height exceptions (i.e. inherit) by @mtallenca in https://github.com/CatHood0/flutter_quill_delta_from_html/pull/25
