@@ -1,9 +1,10 @@
 import 'package:dart_quill_delta/dart_quill_delta.dart';
 import 'package:flutter_quill_delta_from_html/parser/extensions/node_ext.dart';
 import 'package:flutter_quill_delta_from_html/parser/html_utils.dart';
-import 'package:html/dom.dart' as dom;
-import 'custom_html_part.dart';
 import 'package:flutter_quill_delta_from_html/parser/node_processor.dart';
+import 'package:html/dom.dart' as dom;
+
+import 'custom_html_part.dart';
 
 /// Operations for converting supported HTML elements to Delta operations.
 ///
@@ -44,6 +45,16 @@ abstract class HtmlOperations {
       if (element.isStrike) attributes['strike'] = true;
       if (element.isSubscript) attributes['script'] = 'sub';
       if (element.isSuperscript) attributes['script'] = 'super';
+      if (element.attributes.containsKey('style')) {
+        final styleAttributes = parseStyleAttribute(
+          element.localName!,
+          element.attributes['style']!,
+        );
+        if (styleAttributes.containsKey('align')) {
+          styleAttributes.remove('align');
+        }
+        attributes.addAll(styleAttributes);
+      }
       for (final node in element.nodes) {
         processNode(node, attributes, delta, customBlocks: customBlocks);
       }
